@@ -7,11 +7,17 @@
   <title>One Verse Today — Daily Scripture Challenge</title>
   <meta name="description" content="A tiny daily practice: Scripture + Action + Reflection." />
 
-  <!-- ✅ Allows plan.json (same origin) + KJV verse fetch from bible-api.com -->
+  <!-- Premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Allows plan.json + KJV verse fetch + Google Fonts -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src https://fonts.gstatic.com;
     img-src 'self' data:;
     connect-src 'self' https://bible-api.com;
     base-uri 'self';
@@ -21,33 +27,38 @@
 
   <style>
     :root{
-      --bg0:#060812;
-      --bg1:#0A0F24;
-      --bg2:#0D1634;
+      /* Million-dollar palette: warm sunrise + cool sky, very controlled contrast */
+      --bg0:#050611;
+      --bg1:#070A1A;
+      --bg2:#0A1026;
 
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.08);
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.16);
+      --text:#F5F7FF;
+      --muted: rgba(245,247,255,.74);
+      --muted2: rgba(245,247,255,.56);
 
-      --text:#EAF0FF;
-      --muted: rgba(234,240,255,.72);
-      --muted2: rgba(234,240,255,.56);
+      --sun:#FDBA74;   /* peach */
+      --sky:#60A5FA;   /* blue */
+      --leaf:#22C55E;  /* green */
+      --violet:#8B5CF6;
 
-      --accent:#7C5CFF;
-      --accent2:#4DD6FF;
+      --stroke: rgba(255,255,255,.11);
+      --stroke2: rgba(255,255,255,.18);
+
       --good:#34D399;
       --warn:#FBBF24;
       --bad:#FB7185;
 
-      --shadow: 0 20px 70px rgba(0,0,0,.55);
-      --shadow2: 0 14px 40px rgba(0,0,0,.45);
+      --shadow: 0 24px 90px rgba(0,0,0,.62);
+      --shadow2: 0 16px 55px rgba(0,0,0,.50);
+      --shadow3: 0 10px 24px rgba(0,0,0,.35);
 
-      --r12: 12px;
-      --r16: 16px;
+      --r28: 28px;
       --r20: 20px;
+      --r16: 16px;
+      --r12: 12px;
 
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --font: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
@@ -58,92 +69,94 @@
       font-family: var(--font);
       color: var(--text);
       background:
-        radial-gradient(1200px 800px at 12% 8%, rgba(124,92,255,.25), transparent 58%),
-        radial-gradient(900px 700px at 85% 14%, rgba(77,214,255,.18), transparent 60%),
-        radial-gradient(900px 900px at 55% 92%, rgba(52,211,153,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1) 35%, var(--bg0));
+        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.20), transparent 60%),
+        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.18), transparent 60%),
+        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.10), transparent 62%),
+        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.14), transparent 64%),
+        linear-gradient(180deg, var(--bg0), var(--bg2) 35%, var(--bg1));
       overflow:hidden;
+      animation: glowFloat 14s ease-in-out infinite;
     }
 
-    a{ color:inherit; text-decoration:none; }
+    /* ultra-subtle texture (no images) */
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          115deg,
+          rgba(255,255,255,.030) 0px,
+          rgba(255,255,255,.030) 1px,
+          rgba(255,255,255,0) 7px,
+          rgba(255,255,255,0) 18px
+        );
+      opacity:.16;
+      mix-blend-mode: overlay;
+    }
+
+    @keyframes glowFloat{
+      0%{ filter:saturate(1.00) brightness(1.00); }
+      50%{ filter:saturate(1.06) brightness(1.03); }
+      100%{ filter:saturate(1.00) brightness(1.00); }
+    }
 
     .app{
       height:100%;
-      padding:14px;
+      padding:16px;
       display:grid;
-      grid-template-rows: auto 1fr;
+      grid-template-rows:auto 1fr;
       gap:14px;
     }
 
-    /* Top Bar */
+    /* ===== Topbar (premium glass + gradient edge) ===== */
     .topbar{
-      position:relative;
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-      border-radius: var(--r20);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow2);
+      border-radius: var(--r28);
       padding:14px;
-      overflow:hidden;
       display:flex;
       gap:14px;
       align-items:center;
       justify-content:space-between;
       flex-wrap:wrap;
-    }
-    .topbar:before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      background:
-        radial-gradient(600px 220px at 20% 0%, rgba(124,92,255,.20), transparent 60%),
-        radial-gradient(600px 220px at 80% 0%, rgba(77,214,255,.14), transparent 60%);
-      pointer-events:none;
-      z-index:0;
-    }
-    .topbar > *{ position:relative; z-index:1; }
+      position:relative;
+      overflow:hidden;
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 270px;
-    }
-    .logo{
-      width:40px;
-      height:40px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.22);
+      border:1px solid transparent;
       background:
-        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.95), rgba(77,214,255,.70));
-      box-shadow: 0 12px 30px rgba(124,92,255,.22);
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035)) padding-box,
+        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow2);
+    }
+
+    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
+    .logo{
+      width:42px; height:42px; border-radius:16px;
+      background:
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.40), transparent 60%),
+        linear-gradient(135deg, rgba(253,186,116,.95), rgba(96,165,250,.80), rgba(139,92,246,.75));
+      box-shadow: 0 18px 44px rgba(253,186,116,.12), 0 18px 44px rgba(96,165,250,.10);
+      border:1px solid rgba(255,255,255,.20);
       flex:0 0 auto;
     }
-    .brand h1{
-      margin:0;
-      font-size:15px;
-      letter-spacing:.2px;
-      line-height:1.15;
-    }
-    .brand p{
-      margin:2px 0 0 0;
-      font-size:12px;
-      color: var(--muted);
-    }
+
+    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:700; }
+    .brand p{ margin:3px 0 0 0; font-size:12px; color: var(--muted); }
+    .brand strong{ font-weight:700; }
 
     .controls{
       flex:1 1 auto;
+      min-width: 330px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       align-items:center;
       justify-content:center;
-      min-width: 330px;
     }
 
     .meta{
-      min-width: 260px;
+      min-width: 300px;
       display:flex;
       flex-direction:column;
       align-items:flex-end;
@@ -164,40 +177,40 @@
       align-items:center;
       gap:8px;
       padding:8px 10px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.13);
       background: rgba(255,255,255,.06);
       white-space:nowrap;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
     }
-    .pill strong{
-      color: var(--text);
-      font-weight: 700;
-    }
+    .pill strong{ color: var(--text); font-weight:800; }
 
-    /* Inputs & Buttons */
-    .input, select{
-      height:38px;
-      border-radius: 12px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
+    /* ===== Inputs / buttons ===== */
+    .input, select, textarea{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
       color: var(--text);
-      padding:0 12px;
       outline:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-      transition: border .15s ease, background .15s ease;
+      transition: border .15s ease, background .15s ease, transform .06s ease;
     }
-    .input::placeholder{ color: rgba(234,240,255,.44); }
-    .input:focus, select:focus{
-      border-color: rgba(124,92,255,.60);
-      background: rgba(124,92,255,.08);
+    .input, select{
+      height:40px;
+      padding:0 12px;
     }
-    select{ cursor:pointer; min-width: 170px; }
+    .input::placeholder{ color: rgba(245,247,255,.42); }
+    .input:focus, select:focus, textarea:focus{
+      border-color: rgba(96,165,250,.55);
+      background: rgba(96,165,250,.09);
+    }
+    select{ cursor:pointer; min-width:180px; }
 
     .btn{
-      height:38px;
+      height:40px;
       padding:0 12px;
-      border-radius: 12px;
-      border:1px solid var(--stroke);
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: var(--text);
       cursor:pointer;
@@ -205,74 +218,71 @@
       align-items:center;
       gap:8px;
       user-select:none;
-      transition: transform .05s ease, border .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), var(--shadow3);
+      transition: transform .06s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
     }
-    .btn:hover{ border-color: var(--stroke2); background: rgba(255,255,255,.08); }
-    .btn:active{ transform: translateY(1px); }
+    .btn:hover{
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.085);
+      transform: translateY(-1px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 38px rgba(0,0,0,.42);
+    }
+    .btn:active{ transform: translateY(0px); }
 
     .btnPrimary{
-      border-color: rgba(124,92,255,.50);
-      background: linear-gradient(180deg, rgba(124,92,255,.22), rgba(124,92,255,.10));
-      box-shadow: 0 14px 30px rgba(124,92,255,.12), inset 0 1px 0 rgba(255,255,255,.08);
-    }
-    .btnPrimary:hover{
-      border-color: rgba(124,92,255,.70);
-      background: linear-gradient(180deg, rgba(124,92,255,.28), rgba(124,92,255,.12));
+      border:1px solid transparent;
+      background:
+        linear-gradient(180deg, rgba(96,165,250,.22), rgba(139,92,246,.10)) padding-box,
+        linear-gradient(120deg, rgba(96,165,250,.55), rgba(139,92,246,.45), rgba(253,186,116,.35)) border-box;
     }
     .btnGood{
-      border-color: rgba(52,211,153,.50);
-      background: linear-gradient(180deg, rgba(52,211,153,.20), rgba(52,211,153,.08));
+      border:1px solid rgba(34,197,94,.40);
+      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.08));
     }
     .btnWarn{
-      border-color: rgba(251,191,36,.55);
-      background: linear-gradient(180deg, rgba(251,191,36,.18), rgba(251,191,36,.07));
+      border:1px solid rgba(253,186,116,.48);
+      background: linear-gradient(180deg, rgba(253,186,116,.18), rgba(253,186,116,.07));
+    }
+    .btnSoft{
+      border:1px solid rgba(96,165,250,.34);
+      background: linear-gradient(180deg, rgba(96,165,250,.14), rgba(255,255,255,.05));
     }
 
     .kbd{
       font-family: var(--mono);
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid var(--stroke);
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.05);
-      color: rgba(234,240,255,.78);
+      color: rgba(245,247,255,.76);
     }
 
-    /* Main Layout */
+    /* ===== Layout ===== */
     .main{
       height:100%;
       display:grid;
-      grid-template-columns: 1.35fr .95fr;
+      grid-template-columns: 1.45fr .85fr;
       gap:14px;
       overflow:hidden;
     }
 
     .panel{
       height:100%;
-      border-radius: var(--r20);
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
+      border-radius: var(--r28);
       overflow:hidden;
       position:relative;
-    }
-    .panel:before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      background:
-        radial-gradient(700px 280px at 25% 0%, rgba(124,92,255,.16), transparent 60%),
-        radial-gradient(700px 280px at 80% 0%, rgba(77,214,255,.12), transparent 60%);
-      pointer-events:none;
-      z-index:0;
-    }
-    .panel > *{ position:relative; z-index:1; }
 
-    /* Main content panel */
+      border:1px solid transparent;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.028)) padding-box,
+        linear-gradient(120deg, rgba(255,255,255,.18), rgba(255,255,255,.04)) border-box;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
     .panelHeader{
-      padding:16px 16px 10px 16px;
+      padding:18px 18px 12px 18px;
       border-bottom: 1px solid rgba(255,255,255,.06);
       display:flex;
       align-items:flex-start;
@@ -280,14 +290,18 @@
       gap:12px;
       flex-wrap:wrap;
     }
+
     .titleBlock h2{
       margin:0;
-      font-size:24px;
-      letter-spacing:.2px;
-      line-height:1.1;
+      font-size:28px;
+      letter-spacing:-.2px;
+      line-height:1.05;
+      font-family: var(--serif);
+      font-weight:600;
     }
+
     .subtitle{
-      margin:10px 0 0 0;
+      margin:12px 0 0 0;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
@@ -295,68 +309,71 @@
       font-size:12px;
     }
 
-    .gridCards{
-      padding:16px;
-      display:grid;
-      gap:12px;
-    }
+    .gridCards{ padding:16px 18px 18px 18px; display:grid; gap:12px; }
 
     .card{
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.05);
-      border-radius: var(--r16);
-      padding:14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-      position:relative;
-      overflow:hidden;
-    }
-    .card:before{
-      content:"";
-      position:absolute;
-      inset:-1px;
+      border-radius: var(--r20);
+      padding:16px;
+      border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(520px 130px at 20% 0%, rgba(124,92,255,.10), transparent 55%),
-        radial-gradient(520px 130px at 80% 0%, rgba(77,214,255,.08), transparent 55%);
-      opacity:.65;
-      pointer-events:none;
+        radial-gradient(800px 120px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
+        radial-gradient(800px 120px at 90% 0%, rgba(96,165,250,.08), transparent 55%),
+        rgba(255,255,255,.05);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 30px rgba(0,0,0,.35);
     }
-    .card > *{ position:relative; z-index:1; }
 
     .cardHead{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
-      margin-bottom:10px;
       flex-wrap:wrap;
+      margin-bottom:10px;
     }
+
     .label{
       font-size:11px;
-      letter-spacing:.14em;
+      letter-spacing:.16em;
       text-transform:uppercase;
-      color: rgba(234,240,255,.60);
+      color: rgba(245,247,255,.64);
+      font-weight:600;
     }
-    .hint{
-      font-size:12px;
-      color: rgba(234,240,255,.60);
-    }
+    .hint{ font-size:12px; color: rgba(245,247,255,.62); }
 
     .contentText{
       font-size:15px;
-      line-height:1.55;
-      color: rgba(234,240,255,.92);
+      line-height:1.72;
+      color: rgba(245,247,255,.92);
       white-space:pre-wrap;
     }
 
+    /* “Million-dollar” scripture typography */
+    #verseText{
+      font-family: var(--serif);
+      font-size:18px;
+      line-height:1.85;
+      letter-spacing:.1px;
+      color: rgba(245,247,255,.94);
+    }
+
+    textarea{
+      width:100%;
+      padding:12px;
+      min-height: 110px;
+      resize: vertical;
+      line-height:1.5;
+      font-size:14px;
+    }
+
     .footerTip{
-      padding: 0 16px 16px 16px;
-      color: rgba(234,240,255,.55);
+      padding: 0 18px 18px 18px;
+      color: rgba(245,247,255,.56);
       font-size:12px;
     }
 
-    /* Sidebar */
+    /* ===== Sidebar ===== */
     .sideTop{
-      padding:16px;
+      padding:18px;
       border-bottom: 1px solid rgba(255,255,255,.06);
       display:flex;
       justify-content:space-between;
@@ -365,86 +382,89 @@
     }
     .sideTop h3{
       margin:0;
-      font-size:13px;
-      letter-spacing:.12em;
+      font-size:12px;
+      letter-spacing:.18em;
       text-transform:uppercase;
-      color: rgba(234,240,255,.72);
+      color: rgba(245,247,255,.76);
+      font-weight:700;
     }
 
     .sideList{
-      height: calc(100% - 62px);
+      height: calc(100% - 66px);
       overflow:auto;
-      padding: 10px;
+      padding:12px;
     }
-    .sideList::-webkit-scrollbar{ width: 10px; }
+    .sideList::-webkit-scrollbar{ width:10px; }
     .sideList::-webkit-scrollbar-thumb{
-      background: rgba(255,255,255,.10);
-      border-radius: 999px;
-      border: 2px solid rgba(0,0,0,0);
+      background: rgba(255,255,255,.12);
+      border-radius:999px;
+      border:2px solid rgba(0,0,0,0);
       background-clip: padding-box;
     }
 
     .dayItem{
-      padding:12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
+      padding:12px 12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.045);
       margin-bottom:10px;
       cursor:pointer;
-      transition: transform .06s ease, background .15s ease, border .15s ease;
       display:flex;
       justify-content:space-between;
       gap:12px;
       align-items:center;
+      transition: transform .08s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
     }
     .dayItem:hover{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.065);
+      border-color: rgba(255,255,255,.18);
       transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0,0,0,.28);
     }
     .dayItem.active{
-      border-color: rgba(124,92,255,.50);
-      background: linear-gradient(180deg, rgba(124,92,255,.14), rgba(255,255,255,.04));
-      box-shadow: 0 12px 26px rgba(124,92,255,.10);
+      border:1px solid transparent;
+      background:
+        linear-gradient(180deg, rgba(253,186,116,.12), rgba(255,255,255,.04)) padding-box,
+        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.30), rgba(139,92,246,.30)) border-box;
+      box-shadow: 0 18px 40px rgba(253,186,116,.08);
     }
 
-    .dayLeft{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .dayTitleRow{
-      display:flex;
-      gap:10px;
-      align-items:baseline;
-      flex-wrap:wrap;
-    }
-    .dayTitleRow strong{
-      font-size:14px;
-    }
-    .refSmall{
-      font-size:12px;
-      color: rgba(234,240,255,.66);
-    }
+    .dayLeft{ min-width:0; display:flex; flex-direction:column; gap:4px; }
+    .dayTitleRow{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+    .dayTitleRow strong{ font-size:14px; }
+    .refSmall{ font-size:12px; color: rgba(245,247,255,.68); }
+
     .topicPill{
       font-size:11px;
       padding:6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: rgba(234,240,255,.78);
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(245,247,255,.78);
       white-space:nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
+    .check{ color: rgba(34,197,94,.95); }
 
-    /* Responsive */
+    /* ===== Responsive ===== */
     @media (max-width: 1050px){
       body{ overflow:auto; }
       .app{ height:auto; }
       .main{ grid-template-columns: 1fr; height:auto; }
       .panel{ height:auto; }
-      .sideList{ height:auto; max-height: 420px; }
+      .sideList{ height:auto; max-height: 440px; }
       .meta{ align-items:flex-start; min-width:auto; }
+    }
+    @media (max-width: 600px){
+      .controls{ justify-content:flex-start; }
+      #searchInput{ width:100%; min-width:0; flex:1 1 100%; }
+      #topicSelect{ width:100%; }
+      .meta{ width:100%; align-items:flex-start; }
+      .metaRow{ justify-content:flex-start; }
+      .titleBlock h2{ font-size:24px; }
+      #verseText{ font-size:18px; }
     }
   </style>
 </head>
@@ -455,23 +475,24 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Daily Scripture Challenge</h1>
-          <p>A tiny daily practice: <strong>Scripture</strong> + <strong>Action</strong> + <strong>Reflection</strong>.</p>
+          <h1>One Verse Today</h1>
+          <p>Scripture + Action + Reflection — <strong>one day at a time</strong>.</p>
         </div>
       </div>
 
-      <div class="controls" aria-label="Controls">
+      <div class="controls">
         <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
-        <select id="topicSelect" title="Filter by topic"></select>
+        <select id="topicSelect"></select>
 
         <button id="prevBtn" class="btn" type="button">◀ Prev <span class="kbd">←</span></button>
         <button id="nextBtn" class="btn" type="button">Next ▶ <span class="kbd">→</span></button>
         <button id="randomBtn" class="btn btnPrimary" type="button">🎲 Random</button>
 
-        <input id="jumpInput" class="input" style="min-width:120px; width:120px;" inputmode="numeric" pattern="[0-9]*" placeholder="Day #" />
+        <input id="jumpInput" class="input" style="min-width:120px;width:120px;" inputmode="numeric" pattern="[0-9]*" placeholder="Day #" />
         <button id="jumpBtn" class="btn" type="button">Go</button>
 
         <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
+        <button id="startBtn" class="btn btnSoft" type="button">✨ Start here</button>
         <button id="clearBtn" class="btn btnWarn" type="button">Clear</button>
       </div>
 
@@ -479,30 +500,30 @@
         <div class="metaRow">
           <span id="dateLabel"></span>
           <span class="pill"><strong id="dayPill">Day —</strong></span>
+          <span class="pill">Streak <strong id="streakLabel">0</strong></span>
         </div>
         <div class="metaRow">
           <span class="pill">Showing <strong id="countLabel">0</strong></span>
           <span class="pill">Selected <strong id="selectedLabel">—</strong></span>
+          <span class="pill">Done <strong id="doneLabel">0</strong></span>
         </div>
       </div>
     </header>
 
     <main class="main">
-      <!-- Main (Selected Day) -->
-      <section class="panel" aria-label="Selected Day">
+      <section class="panel">
         <div class="panelHeader">
           <div>
-            <div class="titleBlock">
-              <h2 id="dayTitle">Loading…</h2>
-              <div class="subtitle">
-                <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
-                <span class="pill">Reference: <strong id="refLabel">—</strong></span>
-              </div>
+            <div class="titleBlock"><h2 id="dayTitle">Loading…</h2></div>
+            <div class="subtitle">
+              <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
+              <span class="pill">Reference: <strong id="refLabel">—</strong></span>
             </div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+            <button id="completeBtn" class="btn btnGood" type="button">✅ Mark complete</button>
             <button id="copyBtn" class="btn" type="button">📋 Copy</button>
-            <button id="shareBtn" class="btn" type="button">🔗 Share link</button>
+            <button id="shareBtn" class="btn" type="button">🔗 Share</button>
           </div>
         </div>
 
@@ -510,7 +531,7 @@
           <article class="card">
             <div class="cardHead">
               <div class="label">Scripture (KJV)</div>
-              <div class="hint" id="verseStatus">Auto-loaded from API</div>
+              <div class="hint" id="verseStatus">Auto-loaded</div>
             </div>
             <div id="verseText" class="contentText">Select a day to see the verse.</div>
           </article>
@@ -526,20 +547,22 @@
           <article class="card">
             <div class="cardHead">
               <div class="label">Reflection</div>
-              <div class="hint">Answer in one honest line.</div>
+              <div class="hint">Save a quick note (optional)</div>
             </div>
             <div id="reflectionText" class="contentText">—</div>
+            <div style="height:10px"></div>
+            <textarea id="notesInput" placeholder="Your note for today (saved on this device)…"></textarea>
+            <div class="hint" id="notesStatus" style="margin-top:8px;">Notes saved locally</div>
           </article>
         </div>
 
         <div class="footerTip" id="footerTip"></div>
       </section>
 
-      <!-- Sidebar (Days) -->
-      <aside class="panel" aria-label="Days List">
+      <aside class="panel">
         <div class="sideTop">
           <h3>Days</h3>
-          <div class="pill" style="cursor:default;">Click to open</div>
+          <div class="pill">Tap to open</div>
         </div>
         <div class="sideList" id="daysList"></div>
       </aside>
@@ -550,24 +573,19 @@
   (() => {
     'use strict';
 
-    // ========= CONFIG =========
     const PLAN_URL = 'plan.json';
-    const STORAGE_KEY = 'ovt_lastDay';
+    const DEFAULT_START_DAY = 1;
+
+    const KEY_LAST = 'ovt_lastDay';
+    const KEY_PROGRESS = 'ovt_progress_v1';
 
     const VERSE_API_BASE = 'https://bible-api.com/';
     const VERSE_TRANSLATION = 'kjv';
     const VERSE_TIMEOUT_MS = 12000;
     const VERSE_CACHE_PREFIX = 'ovt_kjv_';
 
-    // ========= STATE =========
-    let plan = [];
-    let filtered = [];
-    let selectedDay = null;   // 1..365
-    let selectedIndex = -1;
-    let lastVerseRef = null;
-
-    // ========= ELEMENTS =========
     const $ = (id) => document.getElementById(id);
+
     const el = {
       searchInput: $('searchInput'),
       topicSelect: $('topicSelect'),
@@ -577,33 +595,57 @@
       jumpInput: $('jumpInput'),
       jumpBtn: $('jumpBtn'),
       todayBtn: $('todayBtn'),
+      startBtn: $('startBtn'),
       clearBtn: $('clearBtn'),
 
       dateLabel: $('dateLabel'),
       dayPill: $('dayPill'),
       countLabel: $('countLabel'),
       selectedLabel: $('selectedLabel'),
+      streakLabel: $('streakLabel'),
+      doneLabel: $('doneLabel'),
 
       dayTitle: $('dayTitle'),
       topicLabel: $('topicLabel'),
       refLabel: $('refLabel'),
 
+      completeBtn: $('completeBtn'),
+      copyBtn: $('copyBtn'),
+      shareBtn: $('shareBtn'),
+
       verseText: $('verseText'),
       verseStatus: $('verseStatus'),
       challengeText: $('challengeText'),
       reflectionText: $('reflectionText'),
+      notesInput: $('notesInput'),
+      notesStatus: $('notesStatus'),
+
       footerTip: $('footerTip'),
-
-      copyBtn: $('copyBtn'),
-      shareBtn: $('shareBtn'),
-
-      daysList: $('daysList'),
+      daysList: $('daysList')
     };
 
-    // ========= HELPERS =========
+    let plan = [];
+    let filtered = [];
+    let selectedDay = null;
+    let selectedIndex = -1;
+    let lastVerseRef = null;
+
+    let progress = { doneDays: {}, notes: {} };
+
     const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
     const safe = (v) => (v == null ? '' : String(v)).trim();
     const norm = (s) => safe(s).toLowerCase();
+
+    function yyyyMMdd(d=new Date()){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    }
+
+    function formatDate(d){
+      return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    }
 
     function isLeapYear(y){
       return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
@@ -614,30 +656,18 @@
       return Math.floor((d - start) / oneDay) + 1;
     }
     function todayPlanDay(){
-      // Map 366 -> 365 on leap years so your plan stays 1..365
       const now = new Date();
       const doy = dayOfYear(now);
       if (isLeapYear(now.getFullYear()) && doy === 366) return 365;
       return clamp(doy, 1, 365);
     }
-    function formatDate(d){
-      return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    }
 
     function getURLDay(){
       const url = new URL(location.href);
       const qs = url.searchParams.get('day');
-      if (qs) {
-        const n = parseInt(qs, 10);
-        if (Number.isFinite(n)) return clamp(n, 1, 365);
-      }
-      // also support hash day=##
-      const m = location.hash.match(/day=(\d{1,3})/i);
-      if (m) {
-        const n = parseInt(m[1], 10);
-        if (Number.isFinite(n)) return clamp(n, 1, 365);
-      }
-      return null;
+      if (!qs) return null;
+      const n = parseInt(qs, 10);
+      return Number.isFinite(n) ? clamp(n, 1, 365) : null;
     }
 
     function setURLDay(day){
@@ -647,15 +677,52 @@
     }
 
     function saveLastDay(day){
-      try { localStorage.setItem(STORAGE_KEY, String(day)); } catch {}
+      try { localStorage.setItem(KEY_LAST, String(day)); } catch {}
     }
     function loadLastDay(){
       try {
-        const v = localStorage.getItem(STORAGE_KEY);
-        const n = parseInt(v, 10);
-        if (Number.isFinite(n)) return clamp(n, 1, 365);
+        const n = parseInt(localStorage.getItem(KEY_LAST), 10);
+        return Number.isFinite(n) ? clamp(n,1,365) : null;
+      } catch { return null; }
+    }
+
+    function loadProgress(){
+      try{
+        const raw = localStorage.getItem(KEY_PROGRESS);
+        if (!raw) return;
+        const obj = JSON.parse(raw);
+        if (obj && typeof obj === 'object'){
+          progress.doneDays = obj.doneDays || {};
+          progress.notes = obj.notes || {};
+        }
       } catch {}
-      return null;
+    }
+    function saveProgress(){
+      try { localStorage.setItem(KEY_PROGRESS, JSON.stringify(progress)); } catch {}
+    }
+
+    function setVerseStatus(msg, type='info'){
+      el.verseStatus.textContent = msg;
+      el.verseStatus.style.color =
+        type === 'good' ? 'rgba(34,197,94,.92)'
+      : type === 'warn' ? 'rgba(253,186,116,.92)'
+      : type === 'bad'  ? 'rgba(251,113,133,.96)'
+      : 'rgba(245,247,255,.62)';
+    }
+
+    async function copyToClipboard(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); } catch {}
+        ta.remove();
+        return true;
+      }
     }
 
     function uniqueTopics(items){
@@ -664,49 +731,41 @@
       return Array.from(set).sort((a,b)=>a.localeCompare(b));
     }
 
-    function setVerseStatus(msg, type='info'){
-      el.verseStatus.textContent = msg;
-      el.verseStatus.style.color =
-        type === 'good' ? 'rgba(52,211,153,.92)'
-      : type === 'warn' ? 'rgba(251,191,36,.92)'
-      : type === 'bad'  ? 'rgba(251,113,133,.96)'
-      : 'rgba(234,240,255,.60)';
-    }
-
-    async function copyToClipboard(text){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); } catch {}
-        ta.remove();
-        return true;
+    function computeStreak(){
+      const doneDates = new Set(Object.values(progress.doneDays || {}));
+      let streak = 0;
+      let cursor = new Date();
+      while (doneDates.has(yyyyMMdd(cursor))) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
       }
+      return streak;
+    }
+    function updateProgressBadges(){
+      el.doneLabel.textContent = String(Object.keys(progress.doneDays || {}).length);
+      el.streakLabel.textContent = String(computeStreak());
+    }
+    function isDayDone(day){
+      return Boolean(progress.doneDays && progress.doneDays[String(day)]);
+    }
+    function setCompleteButtonState(){
+      const done = selectedDay != null && isDayDone(selectedDay);
+      el.completeBtn.textContent = done ? '✅ Completed' : '✅ Mark complete';
+      el.completeBtn.style.opacity = done ? '0.88' : '1';
     }
 
-    // ========= VERSE CACHE + FETCH =========
     function cacheGet(ref){
       try { return localStorage.getItem(VERSE_CACHE_PREFIX + ref); } catch { return null; }
     }
     function cacheSet(ref, text){
       try { localStorage.setItem(VERSE_CACHE_PREFIX + ref, text); } catch {}
     }
-
     async function fetchWithTimeout(url){
       const controller = new AbortController();
       const t = setTimeout(() => controller.abort(), VERSE_TIMEOUT_MS);
-      try{
-        return await fetch(url, { signal: controller.signal });
-      } finally {
-        clearTimeout(t);
-      }
+      try { return await fetch(url, { signal: controller.signal }); }
+      finally { clearTimeout(t); }
     }
-
     async function loadVerseKJV(reference){
       const ref = safe(reference);
       if (!ref) return null;
@@ -716,8 +775,8 @@
 
       const url = `${VERSE_API_BASE}${encodeURIComponent(ref)}?translation=${encodeURIComponent(VERSE_TRANSLATION)}`;
       const res = await fetchWithTimeout(url);
-
       if (!res.ok) throw new Error(`Verse API HTTP ${res.status}`);
+
       const data = await res.json();
       const text = safe(data && data.text);
       if (!text) throw new Error('Verse API returned empty text');
@@ -726,7 +785,6 @@
       return text;
     }
 
-    // ========= FILTERING =========
     function applyFilters(){
       const q = norm(el.searchInput.value);
       const topic = el.topicSelect.value;
@@ -734,38 +792,23 @@
       filtered = plan.filter(item => {
         const t = safe(item.topic) || 'General';
         if (topic && topic !== 'ALL' && t !== topic) return false;
-
         if (!q) return true;
-        const hay = norm(
-          `${item.day} ${item.reference} ${item.topic} ${item.challenge} ${item.reflection}`
-        );
+        const hay = norm(`${item.day} ${item.reference} ${item.topic} ${item.challenge} ${item.reflection}`);
         return hay.includes(q);
       });
 
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
       renderSidebar();
 
-      // Keep selected day stable if possible
-      if (selectedDay != null) {
+      if (selectedDay != null){
         const idx = filtered.findIndex(x => x.day === selectedDay);
-        if (idx >= 0) {
-          selectedIndex = idx;
-          highlightSidebar();
-          return;
-        }
+        if (idx >= 0){ selectedIndex = idx; highlightSidebar(); return; }
       }
-
-      // Otherwise pick first filtered item
-      if (filtered.length) selectDay(filtered[0].day, { fromFilter:true });
-      else {
-        selectedDay = null;
-        selectedIndex = -1;
-        renderEmptyState();
-      }
+      if (filtered.length) selectDay(filtered[0].day);
+      else renderEmpty();
     }
 
-    // ========= RENDER =========
-    function renderEmptyState(){
+    function renderEmpty(){
       el.dayTitle.textContent = 'No results';
       el.topicLabel.textContent = '—';
       el.refLabel.textContent = '—';
@@ -773,16 +816,19 @@
       setVerseStatus('No verse to load', 'warn');
       el.challengeText.textContent = '—';
       el.reflectionText.textContent = '—';
+      el.notesInput.value = '';
       el.dayPill.textContent = 'Day —';
       el.selectedLabel.textContent = '—';
       el.footerTip.textContent = '';
+      setCompleteButtonState();
+      updateProgressBadges();
     }
 
     function renderSidebar(){
       el.daysList.innerHTML = '';
-
       const frag = document.createDocumentFragment();
-      for (const item of filtered) {
+
+      for (const item of filtered){
         const div = document.createElement('div');
         div.className = 'dayItem';
         div.dataset.day = String(item.day);
@@ -802,37 +848,36 @@
 
         row.appendChild(strong);
         row.appendChild(ref);
-
         left.appendChild(row);
 
         const right = document.createElement('span');
         right.className = 'topicPill';
-        right.textContent = safe(item.topic) || 'General';
+        right.innerHTML = `${isDayDone(item.day) ? '<span class="check">✓</span>' : ''}${safe(item.topic) || 'General'}`;
 
         div.appendChild(left);
         div.appendChild(right);
 
-        div.addEventListener('click', () => selectDay(item.day));
+        div.addEventListener('click', ()=>selectDay(item.day));
         frag.appendChild(div);
       }
 
       el.daysList.appendChild(frag);
       highlightSidebar();
+      updateProgressBadges();
     }
 
     function highlightSidebar(){
-      const items = el.daysList.querySelectorAll('.dayItem');
-      items.forEach(node => {
-        const d = parseInt(node.dataset.day, 10);
-        node.classList.toggle('active', d === selectedDay);
+      const nodes = el.daysList.querySelectorAll('.dayItem');
+      nodes.forEach(n=>{
+        const d = parseInt(n.dataset.day,10);
+        n.classList.toggle('active', d === selectedDay);
       });
       el.selectedLabel.textContent = selectedDay ? `Day ${selectedDay}` : '—';
     }
 
     async function renderSelected(){
       if (selectedDay == null) return;
-
-      const item = plan.find(x => x.day === selectedDay);
+      const item = plan.find(x=>x.day===selectedDay);
       if (!item) return;
 
       el.dayTitle.textContent = `Day ${item.day}`;
@@ -840,32 +885,41 @@
       el.refLabel.textContent = safe(item.reference) || '—';
       el.challengeText.textContent = safe(item.challenge) || '—';
       el.reflectionText.textContent = safe(item.reflection) || '—';
-
       el.dayPill.textContent = `Day ${item.day}`;
 
-      // Footer tip
-      el.footerTip.textContent = 'Tip: If verse text fails to load, the reference still works—look it up in your preferred Bible.';
+      el.notesInput.value = progress.notes[String(selectedDay)] || '';
+      el.notesStatus.textContent = 'Notes saved locally';
 
-      // Verse loading
+      setCompleteButtonState();
+      updateProgressBadges();
+
+      const today = todayPlanDay();
+      const doneDates = new Set(Object.values(progress.doneDays || {}));
+      const hasCompletedToday = doneDates.has(yyyyMMdd());
+
+      el.footerTip.textContent =
+        (selectedDay === today)
+          ? (hasCompletedToday ? 'You already completed today — beautiful work. ✨' : 'Today is a great day to do the challenge. 🌤️')
+          : 'Tip: “Today” jumps to the day-of-year. “Start here” begins the journey at Day 1.';
+
       const ref = safe(item.reference);
-      if (!ref) {
+      if (!ref){
         el.verseText.textContent = 'No reference found for this day.';
         setVerseStatus('Missing reference', 'warn');
         return;
       }
-      if (ref === lastVerseRef) return; // avoid redundant work
+      if (ref === lastVerseRef) return;
       lastVerseRef = ref;
 
       el.verseText.textContent = 'Loading verse…';
-      setVerseStatus('Loading from API…', 'info');
+      setVerseStatus('Loading…', 'info');
 
       try{
         const verse = await loadVerseKJV(ref);
         el.verseText.textContent = `${verse}\n\n— ${ref} (KJV)`;
         setVerseStatus('Loaded', 'good');
       } catch (err){
-        // Show a helpful message (likely CSP or network)
-        const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+        const msg = err && err.message ? err.message : String(err || 'Unknown error');
         el.verseText.textContent =
           `Verse text couldn’t load for “${ref}”.\n\n` +
           `Reference still works—look it up in your preferred Bible.\n\n` +
@@ -875,13 +929,10 @@
       }
     }
 
-    // ========= SELECTION / NAV =========
-    function selectDay(day, opts={}){
-      const d = clamp(parseInt(day, 10), 1, 365);
+    function selectDay(day){
+      const d = clamp(parseInt(day,10), 1, 365);
       selectedDay = d;
-
-      // Update selectedIndex within filtered
-      selectedIndex = filtered.findIndex(x => x.day === selectedDay);
+      selectedIndex = filtered.findIndex(x=>x.day===selectedDay);
 
       saveLastDay(selectedDay);
       setURLDay(selectedDay);
@@ -889,7 +940,6 @@
       highlightSidebar();
       renderSelected();
 
-      // If it’s in the list, keep it visible
       const active = el.daysList.querySelector(`.dayItem[data-day="${selectedDay}"]`);
       if (active) active.scrollIntoView({ block:'nearest' });
     }
@@ -900,40 +950,61 @@
       selectedIndex = clamp(selectedIndex - 1, 0, filtered.length - 1);
       selectDay(filtered[selectedIndex].day);
     }
-
     function next(){
       if (!filtered.length) return;
       if (selectedIndex < 0) selectedIndex = 0;
       selectedIndex = clamp(selectedIndex + 1, 0, filtered.length - 1);
       selectDay(filtered[selectedIndex].day);
     }
-
     function random(){
       if (!filtered.length) return;
-      const idx = Math.floor(Math.random() * filtered.length);
+      const idx = Math.floor(Math.random()*filtered.length);
       selectDay(filtered[idx].day);
     }
-
     function jump(){
       const v = parseInt(el.jumpInput.value, 10);
       if (!Number.isFinite(v)) return;
-      selectDay(clamp(v, 1, 365));
+      selectDay(clamp(v,1,365));
       el.jumpInput.value = '';
     }
-
     function clearFilters(){
       el.searchInput.value = '';
       el.topicSelect.value = 'ALL';
       applyFilters();
     }
 
-    // ========= INIT =========
+    function markComplete(){
+      if (selectedDay == null) return;
+      const dayKey = String(selectedDay);
+      const todayKey = yyyyMMdd();
+
+      if (progress.doneDays[dayKey]) delete progress.doneDays[dayKey];
+      else progress.doneDays[dayKey] = todayKey;
+
+      saveProgress();
+      setCompleteButtonState();
+      updateProgressBadges();
+      renderSidebar();
+      renderSelected();
+    }
+
+    let notesTimer = null;
+    function saveNotesDebounced(){
+      if (selectedDay == null) return;
+      clearTimeout(notesTimer);
+      notesTimer = setTimeout(() => {
+        progress.notes[String(selectedDay)] = el.notesInput.value || '';
+        saveProgress();
+        el.notesStatus.textContent = 'Saved';
+        setTimeout(()=>{ el.notesStatus.textContent = 'Notes saved locally'; }, 900);
+      }, 250);
+    }
+
     async function loadPlan(){
       const res = await fetch(PLAN_URL, { cache:'no-store' });
       if (!res.ok) throw new Error(`Failed to load plan.json (HTTP ${res.status})`);
       const data = await res.json();
 
-      // Basic validation + normalization
       plan = Array.isArray(data) ? data : [];
       plan = plan
         .filter(x => x && Number.isFinite(parseInt(x.day,10)))
@@ -942,18 +1013,16 @@
           reference: safe(x.reference),
           topic: safe(x.topic) || 'General',
           challenge: safe(x.challenge),
-          reflection: safe(x.reflection),
+          reflection: safe(x.reflection)
         }))
         .sort((a,b)=>a.day-b.day);
 
-      // Topic dropdown
       const topics = uniqueTopics(plan);
       el.topicSelect.innerHTML = '';
       const optAll = document.createElement('option');
       optAll.value = 'ALL';
       optAll.textContent = 'All topics';
       el.topicSelect.appendChild(optAll);
-
       for (const t of topics){
         const opt = document.createElement('option');
         opt.value = t;
@@ -961,82 +1030,92 @@
         el.topicSelect.appendChild(opt);
       }
 
-      // Date label
       el.dateLabel.textContent = formatDate(new Date());
 
-      // Initial filtered set
       filtered = plan.slice();
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
       renderSidebar();
 
-      // Pick initial day
+      // Start rules:
+      // 1) URL day wins
+      // 2) Returning: Today if not completed today, else last day
+      // 3) First-time: Day 1
       const urlDay = getURLDay();
       const last = loadLastDay();
-      const initial = urlDay || last || todayPlanDay();
+      const today = todayPlanDay();
+      const doneDates = new Set(Object.values(progress.doneDays || {}));
+      const hasCompletedToday = doneDates.has(yyyyMMdd());
+
+      let initial;
+      if (urlDay) initial = urlDay;
+      else if (last) initial = hasCompletedToday ? last : today;
+      else initial = DEFAULT_START_DAY;
+
       selectDay(initial);
     }
 
-    // ========= EVENTS =========
-    el.searchInput.addEventListener('input', () => applyFilters());
-    el.topicSelect.addEventListener('change', () => applyFilters());
+    el.searchInput.addEventListener('input', applyFilters);
+    el.topicSelect.addEventListener('change', applyFilters);
 
     el.prevBtn.addEventListener('click', prev);
     el.nextBtn.addEventListener('click', next);
     el.randomBtn.addEventListener('click', random);
     el.jumpBtn.addEventListener('click', jump);
     el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
+    el.startBtn.addEventListener('click', () => selectDay(1));
     el.clearBtn.addEventListener('click', clearFilters);
 
-    el.jumpInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') jump();
-    });
+    el.jumpInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') jump(); });
 
-    // Keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
+    window.addEventListener('keydown', (e)=>{
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
       if (e.key.toLowerCase() === 'r') random();
       if (e.key.toLowerCase() === 't') selectDay(todayPlanDay());
+      if (e.key.toLowerCase() === 's') selectDay(1);
     });
 
-    // Copy actions
-    el.copyBtn.addEventListener('click', async () => {
+    el.completeBtn.addEventListener('click', markComplete);
+    el.notesInput.addEventListener('input', saveNotesDebounced);
+
+    el.copyBtn.addEventListener('click', async ()=>{
       if (selectedDay == null) return;
-      const item = plan.find(x => x.day === selectedDay);
+      const item = plan.find(x=>x.day===selectedDay);
       if (!item) return;
 
+      const note = progress.notes[String(selectedDay)] || '';
       const text =
         `Day ${item.day}\n` +
         `Topic: ${item.topic}\n` +
         `Reference: ${item.reference}\n\n` +
         `${safe(el.verseText.textContent)}\n\n` +
         `Challenge: ${item.challenge}\n\n` +
-        `Reflection: ${item.reflection}\n`;
+        `Reflection: ${item.reflection}\n\n` +
+        (note ? `My note: ${note}\n` : '');
 
       await copyToClipboard(text);
-      setVerseStatus('Copied to clipboard', 'good');
-      setTimeout(() => setVerseStatus('Auto-loaded from API', 'info'), 1200);
+      setVerseStatus('Copied', 'good');
+      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
     });
 
-    el.shareBtn.addEventListener('click', async () => {
+    el.shareBtn.addEventListener('click', async ()=>{
       if (selectedDay == null) return;
       const url = new URL(location.href);
       url.searchParams.set('day', String(selectedDay));
       await copyToClipboard(url.toString());
       setVerseStatus('Link copied', 'good');
-      setTimeout(() => setVerseStatus('Auto-loaded from API', 'info'), 1200);
+      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
     });
 
-    // ========= BOOT =========
-    loadPlan().catch(err => {
+    loadProgress();
+    loadPlan().catch(err=>{
       console.error(err);
       el.dayTitle.textContent = 'Error loading plan';
       el.verseText.textContent = String(err && err.message ? err.message : err);
       setVerseStatus('Load failed', 'bad');
       el.footerTip.textContent = 'Make sure plan.json is in the same folder as index.html and is valid JSON.';
     });
-
   })();
   </script>
 </body>
