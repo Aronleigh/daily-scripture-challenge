@@ -3,345 +3,579 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>365-Day Plan</title>
-  <meta name="description" content="A simple 365-day Bible-based plan with daily challenge and reflection." />
+  <title>Daily Scripture Challenge</title>
+  <meta name="description" content="A tiny daily practice: Scripture → Action → Reflection." />
+
+  <!-- Optional: nicer font (safe on GitHub Pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0b0f19;
-      --panel:#0f172a;
-      --panel2:#111c36;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --accent:#60a5fa;
-      --accent2:#34d399;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:16px;
+      --bg0:#070A12;
+      --bg1:#0A1021;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --text: #EAF0FF;
+      --muted: rgba(234,240,255,.70);
+      --muted2: rgba(234,240,255,.52);
+      --accent: #7C5CFF;
+      --accent2:#29D3FF;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --radius: 18px;
+      --radius2: 26px;
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 10% 0%, rgba(96,165,250,.25), transparent 60%),
-                  radial-gradient(900px 700px at 100% 30%, rgba(52,211,153,.18), transparent 55%),
-                  var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
-      line-height:1.45;
+      background:
+        radial-gradient(1000px 700px at 15% 10%, rgba(124,92,255,.30), transparent 60%),
+        radial-gradient(900px 650px at 90% 25%, rgba(41,211,255,.18), transparent 55%),
+        radial-gradient(800px 600px at 70% 100%, rgba(34,197,94,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
     }
-    a{color:inherit}
+
     .wrap{
-      max-width:1050px;
-      margin:0 auto;
-      padding:24px 16px 60px;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 22px 16px 70px;
     }
-    header{
+
+    /* Top header */
+    .topbar{
       display:flex;
-      gap:14px;
-      flex-wrap:wrap;
-      align-items:flex-end;
+      align-items:center;
       justify-content:space-between;
+      gap:14px;
       margin-bottom:14px;
     }
-    .title h1{
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width:0;
+    }
+    .logo{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:
+        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.45), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.75), rgba(41,211,255,.45));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.25) 50%, transparent 60%);
+      transform: rotate(20deg);
+      animation: shine 5.2s ease-in-out infinite;
+    }
+    @keyframes shine{
+      0%, 55% { transform: translateX(-40%) rotate(20deg); opacity:.0; }
+      65%     { opacity:.9; }
+      100%    { transform: translateX(40%) rotate(20deg); opacity:0; }
+    }
+
+    .brand h1{
       margin:0;
-      font-size:28px;
+      font-size:18px;
+      font-weight:800;
       letter-spacing:.2px;
+      line-height:1.1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .title p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:14px;
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted2);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    .pillrow{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
       border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:600;
+    }
+    .dot{
+      width:9px; height:9px; border-radius:999px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 3px rgba(124,92,255,.16);
     }
 
+    /* Card base */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Controls (sticky on desktop) */
     .controls{
       display:grid;
-      grid-template-columns: 1.4fr .8fr .8fr auto auto auto;
+      grid-template-columns: 1.4fr 1fr 1fr auto auto auto;
       gap:10px;
-      padding:14px;
-      align-items:center;
+      padding: 14px;
+      position: sticky;
+      top: 10px;
+      z-index: 10;
     }
-    @media (max-width:900px){
+    @media (max-width: 980px){
       .controls{
         grid-template-columns: 1fr 1fr;
+        position: static;
       }
+      .pillrow{ justify-content:flex-start; }
     }
+
     input, select, button{
       width:100%;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(15,23,42,.75);
-      color:var(--text);
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(8,12,22,.55);
+      color: var(--text);
       outline:none;
+      font: inherit;
     }
-    input::placeholder{color:rgba(229,231,235,.55)}
+    input::placeholder{ color: rgba(234,240,255,.45); }
+
     button{
       cursor:pointer;
-      font-weight:600;
-      transition: transform .05s ease, background .15s ease, border-color .15s ease;
-    }
-    button:hover{border-color:rgba(96,165,250,.45)}
-    button:active{transform: translateY(1px)}
-    .btn-accent{background:rgba(96,165,250,.18)}
-    .btn-green{background:rgba(52,211,153,.18)}
-    .btn-ghost{background:rgba(255,255,255,.03)}
-    .statusbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 14px 14px;
-      color:var(--muted);
-      font-size:13px;
-      border-top:1px solid var(--border);
-    }
-    .chips{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      padding:6px 10px;
-      border-radius:999px;
-      color:var(--muted);
-    }
-    .chip strong{color:var(--text); font-weight:700}
-
-    main{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:14px;
-    }
-    @media (max-width:900px){
-      main{grid-template-columns:1fr}
-    }
-
-    .card{
-      padding:16px;
-    }
-    .card h2{
-      margin:0 0 8px;
-      font-size:18px;
+      font-weight:800;
       letter-spacing:.2px;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+      user-select:none;
     }
-    .meta{
+    button:hover{
+      border-color: rgba(124,92,255,.35);
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+    }
+    button:active{ transform: translateY(1px); }
+
+    .btn{
+      background: rgba(255,255,255,.05);
+    }
+    .btn-primary{
+      background: linear-gradient(135deg, rgba(124,92,255,.80), rgba(41,211,255,.55));
+      border-color: rgba(255,255,255,.20);
+    }
+    .btn-good{
+      background: linear-gradient(135deg, rgba(34,197,94,.75), rgba(41,211,255,.35));
+      border-color: rgba(255,255,255,.18);
+    }
+
+    .subbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding: 0 14px 14px;
+      color: var(--muted2);
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin-top: 2px;
+    }
+    .subbar .left, .subbar .right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chip{
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .chip strong{ color: var(--text); }
+
+    .progress{
+      width: 220px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 18px rgba(124,92,255,.25);
+      transition: width .35s ease;
+    }
+
+    /* Layout main */
+    .grid{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .detail{
+      padding: 18px;
+      border-radius: var(--radius2);
+    }
+
+    .dateRow{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-      margin:0 0 12px;
-      color:var(--muted);
-      font-size:13px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 10px;
+    }
+    .titleRow{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .titleRow h2{
+      margin:0;
+      font-size: 26px;
+      letter-spacing: .2px;
+      line-height: 1.1;
+    }
+    .titleRow .meta{
+      display:flex; gap:8px; flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 13px;
     }
     .badge{
-      border:1px solid var(--border);
-      padding:4px 9px;
-      border-radius:999px;
-      background:rgba(255,255,255,.03);
-    }
-    .block{
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      margin-top:10px;
-    }
-    .block h3{
-      margin:0 0 6px;
-      font-size:14px;
-      color:var(--muted);
-      font-weight:700;
-      letter-spacing:.3px;
-      text-transform:uppercase;
-    }
-    .block p{margin:0; font-size:15px}
-    .small{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:10px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
     }
 
-    .list{
-      padding:0;
+    .verseBox{
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .verseBox::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(500px 200px at 20% 0%, rgba(124,92,255,.22), transparent 60%);
+      pointer-events:none;
+    }
+    .verseLabel{
+      color: var(--muted2);
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .14em;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .verseText{
       margin:0;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+    .verseRef{
+      margin-top: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .section{
+      margin-top: 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    .sectionHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sectionHead h3{
+      margin:0;
+      font-size: 13px;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .sectionBody{
+      padding: 12px 14px 14px;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .mini{
+      color: var(--muted2);
+      font-size: 12px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+    .actions button{ width:auto; padding: 10px 12px; }
+
+    /* Sidebar list */
+    .side{
+      padding: 8px;
+      border-radius: var(--radius2);
+    }
+    .listTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 10px 8px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+    }
+    .list{
+      margin:0;
+      padding:0;
       list-style:none;
-      max-height: 520px;
+      max-height: 610px;
       overflow:auto;
+      border-radius: 18px;
     }
-    .list li{
-      border-top:1px solid var(--border);
-      padding:12px 14px;
-      cursor:pointer;
-      transition: background .12s ease;
-    }
-    .list li:first-child{border-top:none}
-    .list li:hover{background:rgba(255,255,255,.03)}
-    .list .d{
+    .item{
       display:flex;
       gap:10px;
       align-items:flex-start;
       justify-content:space-between;
+      padding: 12px 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      cursor:pointer;
+      transition: background .12s ease, transform .08s ease;
     }
-    .list .left{
-      min-width:0;
-    }
-    .list .day{
-      font-weight:800;
-      color:var(--text);
-    }
-    .list .ref{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:2px;
-    }
-    .list .topic{
-      color:rgba(96,165,250,.9);
-      font-size:12px;
-      border:1px solid rgba(96,165,250,.25);
-      padding:3px 8px;
-      border-radius:999px;
-      background:rgba(96,165,250,.08);
+    .item:hover{ background: rgba(255,255,255,.03); }
+    .item:active{ transform: translateY(1px); }
+    .item:first-child{ border-top:none; }
+
+    .itemLeft{ min-width:0; }
+    .itemDay{ font-weight: 900; }
+    .itemRef{
+      color: var(--muted2);
+      font-size: 12px;
+      margin-top: 2px;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 230px;
     }
-    .hint{
-      padding:14px;
-      color:var(--muted);
-      font-size:13px;
-      border-top:1px solid var(--border);
+    .pillTopic{
+      white-space:nowrap;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(124,92,255,.25);
+      background: rgba(124,92,255,.12);
+      color: rgba(234,240,255,.92);
     }
+    .selected{
+      background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(41,211,255,.10));
+      border-left: 3px solid rgba(124,92,255,.75);
+    }
+
+    .foot{
+      margin-top: 12px;
+      padding: 12px 16px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     .error{
-      color:#fecaca;
-      background:rgba(239,68,68,.12);
-      border:1px solid rgba(239,68,68,.25);
-      padding:10px 12px;
-      border-radius:12px;
-      margin-top:10px;
-      white-space:pre-wrap;
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(239,68,68,.30);
+      background: rgba(239,68,68,.12);
+      color: #fecaca;
+      white-space: pre-wrap;
+      display:none;
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <header>
-      <div class="title">
-        <h1>365-Day Plan</h1>
-        <p>Search, filter by topic, and click a day to view its verse, challenge, and reflection.</p>
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div style="min-width:0">
+          <h1>Daily Scripture Challenge</h1>
+          <p>A tiny daily practice: Scripture → Action → Reflection.</p>
+        </div>
       </div>
-    </header>
+
+      <div class="pillrow">
+        <div class="pill"><span class="dot"></span><span id="todayLabel">—</span></div>
+        <div class="pill"><span style="opacity:.8">Day</span> <span id="dayPill" style="color:var(--text);font-weight:900">—</span></div>
+      </div>
+    </div>
 
     <section class="panel">
       <div class="controls">
-        <input id="search" type="text" placeholder="Search (reference, topic, challenge, reflection)..." />
-        <select id="topicFilter">
-          <option value="">All topics</option>
-        </select>
+        <input id="search" type="text" placeholder="Search reference, topic, challenge, reflection…" />
+        <select id="topicFilter"><option value="">All topics</option></select>
+        <select id="dayJump"><option value="">Jump to day…</option></select>
 
-        <select id="dayJump">
-          <option value="">Jump to day…</option>
-        </select>
-
-        <button id="prevBtn" class="btn-ghost" title="Previous day">◀ Prev</button>
-        <button id="nextBtn" class="btn-ghost" title="Next day">Next ▶</button>
-        <button id="randomBtn" class="btn-accent" title="Random day">🎲 Random</button>
+        <button id="prevBtn" class="btn" title="Previous">◀ Prev</button>
+        <button id="nextBtn" class="btn" title="Next">Next ▶</button>
+        <button id="randomBtn" class="btn-primary" title="Random day">🎲 Random</button>
       </div>
 
-      <div class="statusbar">
-        <div class="chips">
-          <span class="chip">Showing <strong id="countShown">0</strong> / <strong id="countTotal">0</strong></span>
-          <span class="chip">Selected: <strong id="selectedDayLabel">—</strong></span>
+      <div class="subbar">
+        <div class="left">
+          <span class="chip">Showing <strong id="countShown">0</strong>/<strong id="countTotal">0</strong></span>
+          <span class="chip">Selected <strong id="selectedLabel">—</strong></span>
         </div>
-        <div class="chips">
-          <button id="todayBtn" class="btn-green" style="width:auto">📅 Today</button>
-          <button id="clearBtn" class="btn-ghost" style="width:auto">Clear</button>
+        <div class="right">
+          <div class="progress" title="Progress through the year"><div class="bar" id="progressBar"></div></div>
+          <button id="todayBtn" class="btn-good" style="width:auto">📅 Today</button>
+          <button id="clearBtn" class="btn" style="width:auto">Clear</button>
         </div>
       </div>
     </section>
 
-    <main>
-      <section class="panel card" aria-live="polite">
-        <h2 id="dayTitle">Pick a day</h2>
-        <div class="meta" id="dayMeta"></div>
-
-        <div class="block">
-          <h3>Challenge</h3>
-          <p id="dayChallenge">Select a day on the right to view details.</p>
+    <div class="grid">
+      <!-- DETAIL -->
+      <section class="panel detail" aria-live="polite">
+        <div class="dateRow">
+          <div class="titleRow">
+            <h2 id="dayTitle">Pick a day</h2>
+            <div class="meta" id="metaRow"></div>
+          </div>
         </div>
 
-        <div class="block">
-          <h3>Reflection</h3>
-          <p id="dayReflection">—</p>
+        <div class="verseBox">
+          <div class="verseLabel">Scripture</div>
+          <p class="verseText" id="verseText">Select a day to see the verse.</p>
+          <div class="verseRef" id="verseRef">—</div>
         </div>
 
-        <div class="small" id="saveHint">Your last selected day is saved in this browser.</div>
-        <div id="err" class="error" style="display:none"></div>
+        <div class="section">
+          <div class="sectionHead">
+            <h3>Today’s Challenge</h3>
+            <span class="mini" id="timeHint">Suggested time: 10 minutes</span>
+          </div>
+          <div class="sectionBody" id="challengeText">—</div>
+        </div>
+
+        <div class="section">
+          <div class="sectionHead">
+            <h3>Reflection</h3>
+            <span class="mini">Answer in one honest line.</span>
+          </div>
+          <div class="sectionBody" id="reflectionText">—</div>
+        </div>
+
+        <div class="actions">
+          <button id="copyBtn" class="btn" title="Copy today’s challenge">📋 Copy</button>
+          <button id="shareBtn" class="btn" title="Copy a shareable link">🔗 Share link</button>
+        </div>
+
+        <div id="err" class="error"></div>
       </section>
 
-      <section class="panel">
+      <!-- SIDEBAR -->
+      <aside class="panel side">
+        <div class="listTop">
+          <span>Days</span>
+          <span style="color:var(--muted2); font-weight:800; letter-spacing:0; text-transform:none;">Click to open</span>
+        </div>
         <ul class="list" id="dayList"></ul>
-        <div class="hint">Tip: use Search + Topic filter to narrow, then click a day.</div>
-      </section>
-    </main>
+        <div class="foot">
+          Tip: If verse text fails to load, the reference still works—look it up in your preferred Bible.
+        </div>
+      </aside>
+    </div>
+
   </div>
 
   <script>
-    // ---------- CONFIG ----------
-    // If you have plan.js that sets window.PLAN = [...], this will use it.
-    // If you have plan.json, we will try fetching it automatically.
-    const PLAN_JS_GLOBAL = "PLAN";     // window.PLAN
-    const PLAN_JSON_FILE = "plan.json"; // optional: plan.json
+    // ---------------------------
+    // CONFIG
+    // ---------------------------
+    const PLAN_JS_GLOBAL = "PLAN";      // plan.js sets window.PLAN = [...]
+    const PLAN_JSON_FILE = "plan.json"; // or plan.json in same folder
     const LOCAL_KEY = "plan365:lastDay";
 
-    // ---------- STATE ----------
+    // Optional: If you have verse text fetch in your current site, you can hook it here.
+    // For now we show the reference and (optionally) a placeholder verse line.
+    const VERSE_PLACEHOLDER = "“(Verse text can be loaded by API or looked up by reference.)”";
+
+    // ---------------------------
+    // STATE
+    // ---------------------------
     let allDays = [];
     let filtered = [];
-    let selectedDay = null;
+    let selected = null;
 
-    // ---------- HELPERS ----------
+    // ---------------------------
+    // HELPERS
+    // ---------------------------
     const $ = (id) => document.getElementById(id);
-
-    function safeText(v){ return (v ?? "").toString(); }
-
-    function normalize(s){
-      return safeText(s).toLowerCase().trim();
-    }
-
-    function dayToLabel(d){
-      return d ? `Day ${d.day}` : "—";
-    }
-
-    function uniqueTopics(days){
-      const set = new Set();
-      days.forEach(d => set.add(safeText(d.topic)));
-      return [...set].filter(Boolean).sort((a,b)=>a.localeCompare(b));
-    }
-
-    function renderTopicOptions(days){
-      const topics = uniqueTopics(days);
-      const sel = $("topicFilter");
-      const cur = sel.value;
-      sel.innerHTML = `<option value="">All topics</option>` + topics.map(t =>
-        `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`
-      ).join("");
-      // restore selection if possible
-      if (topics.includes(cur)) sel.value = cur;
-    }
-
-    function renderDayJump(days){
-      const sel = $("dayJump");
-      sel.innerHTML = `<option value="">Jump to day…</option>` + days.map(d =>
-        `<option value="${d.day}">Day ${d.day} — ${escapeHtml(d.topic || "")}</option>`
-      ).join("");
-    }
+    const safe = (v) => (v ?? "").toString();
 
     function escapeHtml(str){
-      return safeText(str)
+      return safe(str)
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -349,53 +583,80 @@
         .replaceAll("'","&#039;");
     }
 
+    function normalize(s){ return safe(s).toLowerCase().trim(); }
+
+    function fmtDate(d){
+      return d.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+    }
+
+    function dayOfYear(){
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 1);
+      const n = Math.floor((now - start) / 86400000) + 1; // 1..366
+      return Math.min(365, Math.max(1, n));
+    }
+
+    function setProgress(dayNum){
+      const pct = Math.round((dayNum / 365) * 100);
+      $("progressBar").style.width = pct + "%";
+    }
+
+    function uniqueTopics(days){
+      const set = new Set();
+      days.forEach(d => set.add(safe(d.topic)));
+      return [...set].filter(Boolean).sort((a,b)=>a.localeCompare(b));
+    }
+
+    function renderTopicOptions(){
+      const topics = uniqueTopics(allDays);
+      $("topicFilter").innerHTML =
+        `<option value="">All topics</option>` +
+        topics.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+    }
+
+    function renderJump(){
+      $("dayJump").innerHTML =
+        `<option value="">Jump to day…</option>` +
+        allDays.map(d => `<option value="${d.day}">Day ${d.day} — ${escapeHtml(d.topic||"")}</option>`).join("");
+    }
+
     function applyFilters(){
       const q = normalize($("search").value);
       const topic = $("topicFilter").value;
 
       filtered = allDays.filter(d => {
-        const matchesTopic = !topic || safeText(d.topic) === topic;
-        if (!matchesTopic) return false;
-
+        if (topic && safe(d.topic) !== topic) return false;
         if (!q) return true;
-
-        const hay = normalize([
-          d.day, d.reference, d.topic, d.challenge, d.reflection
-        ].join(" | "));
-
+        const hay = normalize([d.day, d.reference, d.topic, d.challenge, d.reflection].join(" | "));
         return hay.includes(q);
       });
 
       $("countShown").textContent = filtered.length;
-      renderList(filtered);
+      renderList();
 
-      // keep selected day visible/valid if possible
-      if (selectedDay) {
-        const stillThere = filtered.some(x => x.day === selectedDay.day);
-        if (!stillThere && filtered.length) selectDay(filtered[0].day, false);
-      } else if (filtered.length) {
-        // no selection yet -> don't auto select, keep "Pick a day"
+      // if selected disappears due to filter, pick first in filtered
+      if (selected && !filtered.some(x => x.day === selected.day) && filtered.length){
+        selectDay(filtered[0].day, false);
       }
     }
 
-    function renderList(days){
+    function renderList(){
+      const pool = filtered.length ? filtered : allDays;
       const ul = $("dayList");
-      ul.innerHTML = days.map(d => {
-        const isSel = selectedDay && d.day === selectedDay.day;
+      ul.innerHTML = pool.map(d => {
+        const isSel = selected && selected.day === d.day;
         return `
-          <li data-day="${d.day}" style="${isSel ? "background:rgba(255,255,255,.04)" : ""}">
-            <div class="d">
-              <div class="left">
-                <div class="day">Day ${d.day}</div>
-                <div class="ref">${escapeHtml(d.reference || "")}</div>
-              </div>
-              <div class="topic">${escapeHtml(d.topic || "")}</div>
+          <li class="item ${isSel ? "selected" : ""}" data-day="${d.day}">
+            <div class="itemLeft">
+              <div class="itemDay">Day ${d.day}</div>
+              <div class="itemRef">${escapeHtml(d.reference || "")}</div>
             </div>
+            <div class="pillTopic">${escapeHtml(d.topic || "")}</div>
           </li>
         `;
       }).join("");
 
-      ul.querySelectorAll("li").forEach(li => {
+      ul.querySelectorAll(".item").forEach(li => {
         li.addEventListener("click", () => {
           const dayNum = parseInt(li.getAttribute("data-day"), 10);
           selectDay(dayNum, true);
@@ -403,24 +664,35 @@
       });
     }
 
+    function setMeta(d){
+      $("metaRow").innerHTML = `
+        <span class="badge">Topic: <strong>${escapeHtml(d.topic || "")}</strong></span>
+        <span class="badge">Reference: <strong>${escapeHtml(d.reference || "")}</strong></span>
+      `;
+    }
+
     function setDetails(d){
-      selectedDay = d;
-      $("selectedDayLabel").textContent = dayToLabel(d);
+      selected = d;
 
       $("dayTitle").textContent = `Day ${d.day}`;
-      $("dayMeta").innerHTML = `
-        <span class="badge">Reference: <strong>${escapeHtml(d.reference || "")}</strong></span>
-        <span class="badge">Topic: <strong>${escapeHtml(d.topic || "")}</strong></span>
-      `;
+      $("selectedLabel").textContent = `Day ${d.day}`;
+      $("dayPill").textContent = d.day;
 
-      $("dayChallenge").textContent = safeText(d.challenge || "");
-      $("dayReflection").textContent = safeText(d.reflection || "");
+      setMeta(d);
+      setProgress(d.day);
 
-      // update list highlight
-      renderList(filtered.length ? filtered : allDays);
+      // Verse (you can replace this with your existing verse fetch if you already have it)
+      $("verseText").textContent = VERSE_PLACEHOLDER;
+      $("verseRef").textContent = safe(d.reference || "");
+
+      $("challengeText").textContent = safe(d.challenge || "");
+      $("reflectionText").textContent = safe(d.reflection || "");
 
       // save
       try { localStorage.setItem(LOCAL_KEY, String(d.day)); } catch {}
+      $("dayJump").value = String(d.day);
+
+      renderList();
     }
 
     function selectDay(dayNum, scrollIntoView){
@@ -429,22 +701,20 @@
       setDetails(d);
 
       if (scrollIntoView){
-        const li = $("dayList").querySelector(`li[data-day="${dayNum}"]`);
+        const li = document.querySelector(`.item[data-day="${dayNum}"]`);
         if (li) li.scrollIntoView({block:"center", behavior:"smooth"});
       }
-      // sync jump dropdown
-      $("dayJump").value = String(dayNum);
+
+      // update URL hash for sharing
+      history.replaceState(null, "", `#day=${dayNum}`);
     }
 
     function move(delta){
-      if (!selectedDay) {
-        if (filtered.length) return selectDay(filtered[0].day, true);
-        if (allDays.length) return selectDay(allDays[0].day, true);
-        return;
-      }
-
       const pool = filtered.length ? filtered : allDays;
-      const idx = pool.findIndex(x => x.day === selectedDay.day);
+      if (!pool.length) return;
+      if (!selected) return selectDay(pool[0].day, true);
+
+      const idx = pool.findIndex(x => x.day === selected.day);
       const nextIdx = Math.min(pool.length-1, Math.max(0, idx + delta));
       selectDay(pool[nextIdx].day, true);
     }
@@ -457,12 +727,7 @@
     }
 
     function selectToday(){
-      if (!allDays.length) return;
-      const start = new Date(new Date().getFullYear(), 0, 1);
-      const now = new Date();
-      const dayOfYear = Math.floor((now - start) / 86400000) + 1; // 1..366
-      const clamped = Math.min(365, Math.max(1, dayOfYear));
-      selectDay(clamped, true);
+      selectDay(dayOfYear(), true);
     }
 
     function clearFilters(){
@@ -472,82 +737,54 @@
     }
 
     function showError(msg){
-      const el = $("err");
-      el.style.display = "block";
-      el.textContent = msg;
+      $("err").style.display = "block";
+      $("err").textContent = msg;
     }
 
-    // ---------- LOADING PLAN ----------
+    // ---------------------------
+    // COPY / SHARE
+    // ---------------------------
+    async function copyText(txt){
+      try{
+        await navigator.clipboard.writeText(txt);
+      }catch{
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    }
+
+    // ---------------------------
+    // LOAD PLAN
+    // ---------------------------
     async function loadPlan(){
-      // 1) If plan.js already loaded and set window.PLAN, use it
       if (window[PLAN_JS_GLOBAL] && Array.isArray(window[PLAN_JS_GLOBAL])) {
         return window[PLAN_JS_GLOBAL];
       }
-
-      // 2) Otherwise try fetching plan.json
-      try{
-        const res = await fetch(PLAN_JSON_FILE, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error("plan.json is not an array");
-        return data;
-      } catch (e){
-        throw new Error(
-          "Could not load plan data.\n\n" +
-          "Fix options:\n" +
-          "1) Use plan.js that sets window.PLAN = [...]\n" +
-          "   and make sure index.html includes: <script src=\"plan.js\"></script>\n" +
-          "OR\n" +
-          "2) Add plan.json next to index.html (same folder)\n\n" +
-          "Details: " + e.message
-        );
-      }
+      const res = await fetch(PLAN_JSON_FILE, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Could not fetch ${PLAN_JSON_FILE} (HTTP ${res.status}).`);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error(`${PLAN_JSON_FILE} is not an array.`);
+      return data;
     }
 
-    function initUI(){
-      $("countTotal").textContent = allDays.length;
-
-      renderTopicOptions(allDays);
-      renderDayJump(allDays);
-
-      applyFilters();
-      renderList(allDays);
-
-      // restore last selected day
-      let last = null;
-      try { last = parseInt(localStorage.getItem(LOCAL_KEY), 10); } catch {}
-      if (last && allDays.some(d => d.day === last)) selectDay(last, false);
-
-      // events
-      $("search").addEventListener("input", applyFilters);
-      $("topicFilter").addEventListener("change", applyFilters);
-
-      $("dayJump").addEventListener("change", () => {
-        const val = parseInt($("dayJump").value, 10);
-        if (val) selectDay(val, true);
-      });
-
-      $("prevBtn").addEventListener("click", () => move(-1));
-      $("nextBtn").addEventListener("click", () => move(1));
-      $("randomBtn").addEventListener("click", pickRandom);
-      $("todayBtn").addEventListener("click", selectToday);
-      $("clearBtn").addEventListener("click", clearFilters);
-
-      // keyboard nav
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") move(-1);
-        if (e.key === "ArrowRight") move(1);
-        if (e.key === "/" && document.activeElement !== $("search")) {
-          e.preventDefault();
-          $("search").focus();
-        }
-      });
+    function getHashDay(){
+      const m = location.hash.match(/day=(\d+)/);
+      if (!m) return null;
+      const n = parseInt(m[1], 10);
+      if (!Number.isFinite(n)) return null;
+      return Math.min(365, Math.max(1, n));
     }
 
     (async function boot(){
+      $("todayLabel").textContent = fmtDate(new Date());
+
       try{
         const data = await loadPlan();
-        // sanitize and sort
         allDays = data
           .map(d => ({
             day: Number(d.day),
@@ -559,19 +796,84 @@
           .filter(d => Number.isFinite(d.day))
           .sort((a,b)=>a.day-b.day);
 
-        initUI();
-      } catch (e){
-        showError(e.message || String(e));
+        $("countTotal").textContent = allDays.length;
+
+        renderTopicOptions();
+        renderJump();
+
+        applyFilters();
+        renderList();
+
+        // events
+        $("search").addEventListener("input", applyFilters);
+        $("topicFilter").addEventListener("change", applyFilters);
+        $("dayJump").addEventListener("change", () => {
+          const val = parseInt($("dayJump").value, 10);
+          if (val) selectDay(val, true);
+        });
+
+        $("prevBtn").addEventListener("click", () => move(-1));
+        $("nextBtn").addEventListener("click", () => move(1));
+        $("randomBtn").addEventListener("click", pickRandom);
+        $("todayBtn").addEventListener("click", selectToday);
+        $("clearBtn").addEventListener("click", clearFilters);
+
+        $("copyBtn").addEventListener("click", async () => {
+          if (!selected) return;
+          const txt =
+            `Day ${selected.day}\n` +
+            `Reference: ${safe(selected.reference)}\n` +
+            `Topic: ${safe(selected.topic)}\n\n` +
+            `Challenge:\n${safe(selected.challenge)}\n\n` +
+            `Reflection:\n${safe(selected.reflection)}`;
+          await copyText(txt);
+        });
+
+        $("shareBtn").addEventListener("click", async () => {
+          if (!selected) return;
+          const url = location.origin + location.pathname + `#day=${selected.day}`;
+          await copyText(url);
+        });
+
+        // keyboard nav
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") move(-1);
+          if (e.key === "ArrowRight") move(1);
+          if (e.key === "/" && document.activeElement !== $("search")) {
+            e.preventDefault(); $("search").focus();
+          }
+        });
+
+        // restore selection priority:
+        // 1) URL hash #day=...
+        // 2) last saved
+        // 3) today's day-of-year
+        const hashDay = getHashDay();
+        if (hashDay) return selectDay(hashDay, true);
+
+        let last = null;
+        try { last = parseInt(localStorage.getItem(LOCAL_KEY), 10); } catch {}
+        if (last && allDays.some(d => d.day === last)) return selectDay(last, false);
+
+        selectToday();
+
+      } catch(e){
+        showError(
+          (e && e.message ? e.message : String(e)) +
+          "\n\nFix options:\n" +
+          "• If you use plan.js: ensure it sets window.PLAN = [...] and include it (see note below)\n" +
+          "• If you use plan.json: ensure plan.json exists next to index.html"
+        );
       }
     })();
   </script>
 
   <!-- IMPORTANT:
-       If your repo uses plan.js (recommended), add THIS line right before the closing </body> tag:
+    If your repo uses plan.js (recommended), add this line right before </body>:
 
-       <script src="plan.js"></script>
+    <script src="plan.js"></script>
 
-       BUT: Only add it if you have plan.js and it sets window.PLAN = [...]
+    And your plan.js must contain: window.PLAN = [ ...365 objects... ];
   -->
 </body>
 </html>
