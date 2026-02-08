@@ -4,15 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>One Verse Today — Daily Scripture Challenge</title>
+  <title>One Verse Today</title>
   <meta name="description" content="A tiny daily practice: Scripture + Action + Reflection." />
 
-  <!-- Premium typography -->
+  <!-- Premium fonts (optional, graceful fallback if blocked) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Allows plan.json + KJV verse fetch + Google Fonts -->
+  <!-- CSP: allow local plan.json + verse API + fonts -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
@@ -27,30 +27,31 @@
 
   <style>
     :root{
-      /* Million-dollar palette: warm sunrise + cool sky, very controlled contrast */
-      --bg0:#050611;
-      --bg1:#070A1A;
-      --bg2:#0A1026;
+      /* Vibrant, happy, premium sunrise */
+      --bg0:#060616;
+      --bg1:#090C20;
+      --bg2:#0B1230;
 
-      --text:#F5F7FF;
-      --muted: rgba(245,247,255,.74);
-      --muted2: rgba(245,247,255,.56);
+      --text:#F4F7FF;
+      --muted: rgba(244,247,255,.74);
+      --muted2: rgba(244,247,255,.56);
 
       --sun:#FDBA74;   /* peach */
       --sky:#60A5FA;   /* blue */
       --leaf:#22C55E;  /* green */
       --violet:#8B5CF6;
+      --rose:#FB7185;
 
       --stroke: rgba(255,255,255,.11);
       --stroke2: rgba(255,255,255,.18);
 
-      --good:#34D399;
-      --warn:#FBBF24;
-      --bad:#FB7185;
+      --good: rgba(34,197,94,1);
+      --warn: rgba(253,186,116,1);
+      --bad:  rgba(251,113,133,1);
 
-      --shadow: 0 24px 90px rgba(0,0,0,.62);
+      --shadow: 0 26px 90px rgba(0,0,0,.62);
       --shadow2: 0 16px 55px rgba(0,0,0,.50);
-      --shadow3: 0 10px 24px rgba(0,0,0,.35);
+      --shadow3: 0 10px 22px rgba(0,0,0,.35);
 
       --r28: 28px;
       --r20: 20px;
@@ -60,6 +61,9 @@
       --font: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --verseSize: 18px;
+      --bodySize: 15px;
     }
 
     *{ box-sizing:border-box; }
@@ -69,16 +73,15 @@
       font-family: var(--font);
       color: var(--text);
       background:
-        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.20), transparent 60%),
-        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.18), transparent 60%),
-        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.10), transparent 62%),
-        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.14), transparent 64%),
+        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.22), transparent 60%),
+        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.20), transparent 60%),
+        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.11), transparent 62%),
+        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.15), transparent 64%),
         linear-gradient(180deg, var(--bg0), var(--bg2) 35%, var(--bg1));
       overflow:hidden;
-      animation: glowFloat 14s ease-in-out infinite;
     }
 
-    /* ultra-subtle texture (no images) */
+    /* subtle premium texture */
     body:before{
       content:"";
       position:fixed;
@@ -92,15 +95,17 @@
           rgba(255,255,255,0) 7px,
           rgba(255,255,255,0) 18px
         );
-      opacity:.16;
+      opacity:.14;
       mix-blend-mode: overlay;
     }
 
+    /* gentle “alive” shimmer */
     @keyframes glowFloat{
       0%{ filter:saturate(1.00) brightness(1.00); }
       50%{ filter:saturate(1.06) brightness(1.03); }
       100%{ filter:saturate(1.00) brightness(1.00); }
     }
+    body{ animation: glowFloat 14s ease-in-out infinite; }
 
     .app{
       height:100%;
@@ -110,7 +115,7 @@
       gap:14px;
     }
 
-    /* ===== Topbar (premium glass + gradient edge) ===== */
+    /* Topbar */
     .topbar{
       border-radius: var(--r28);
       padding:14px;
@@ -125,12 +130,12 @@
       border:1px solid transparent;
       background:
         linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035)) padding-box,
-        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
+        linear-gradient(120deg, rgba(253,186,116,.48), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
       backdrop-filter: blur(12px);
       box-shadow: var(--shadow2);
     }
 
-    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
+    .brand{ display:flex; align-items:center; gap:12px; min-width:260px; }
     .logo{
       width:42px; height:42px; border-radius:16px;
       background:
@@ -140,10 +145,9 @@
       border:1px solid rgba(255,255,255,.20);
       flex:0 0 auto;
     }
-
-    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:700; }
+    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:800; }
     .brand p{ margin:3px 0 0 0; font-size:12px; color: var(--muted); }
-    .brand strong{ font-weight:700; }
+    .brand strong{ font-weight:800; }
 
     .controls{
       flex:1 1 auto;
@@ -156,11 +160,11 @@
     }
 
     .meta{
-      min-width: 300px;
+      min-width: 330px;
       display:flex;
       flex-direction:column;
       align-items:flex-end;
-      gap:6px;
+      gap:8px;
     }
     .metaRow{
       display:flex;
@@ -185,7 +189,17 @@
     }
     .pill strong{ color: var(--text); font-weight:800; }
 
-    /* ===== Inputs / buttons ===== */
+    .kbd{
+      font-family: var(--mono);
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      color: rgba(245,247,255,.76);
+    }
+
+    /* Inputs / buttons */
     .input, select, textarea{
       border-radius:14px;
       border:1px solid rgba(255,255,255,.14);
@@ -194,11 +208,9 @@
       outline:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
       transition: border .15s ease, background .15s ease, transform .06s ease;
+      font-family: var(--font);
     }
-    .input, select{
-      height:40px;
-      padding:0 12px;
-    }
+    .input, select{ height:40px; padding:0 12px; }
     .input::placeholder{ color: rgba(245,247,255,.42); }
     .input:focus, select:focus, textarea:focus{
       border-color: rgba(96,165,250,.55);
@@ -219,7 +231,8 @@
       gap:8px;
       user-select:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06), var(--shadow3);
-      transition: transform .06s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
+      transition: transform .08s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
+      font-weight:600;
     }
     .btn:hover{
       border-color: rgba(255,255,255,.22);
@@ -244,21 +257,11 @@
       background: linear-gradient(180deg, rgba(253,186,116,.18), rgba(253,186,116,.07));
     }
     .btnSoft{
-      border:1px solid rgba(96,165,250,.34);
-      background: linear-gradient(180deg, rgba(96,165,250,.14), rgba(255,255,255,.05));
+      border:1px solid rgba(253,186,116,.36);
+      background: linear-gradient(180deg, rgba(253,186,116,.13), rgba(255,255,255,.05));
     }
 
-    .kbd{
-      font-family: var(--mono);
-      font-size:11px;
-      padding:2px 6px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      color: rgba(245,247,255,.76);
-    }
-
-    /* ===== Layout ===== */
+    /* Layout */
     .main{
       height:100%;
       display:grid;
@@ -291,6 +294,13 @@
       flex-wrap:wrap;
     }
 
+    .titleBlock{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
     .titleBlock h2{
       margin:0;
       font-size:28px;
@@ -298,6 +308,35 @@
       line-height:1.05;
       font-family: var(--serif);
       font-weight:600;
+    }
+
+    .badgeRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      font-size:12px;
+      color: rgba(245,247,255,.86);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .badgeToday{
+      border-color: rgba(96,165,250,.28);
+      background: linear-gradient(180deg, rgba(96,165,250,.14), rgba(255,255,255,.04));
+    }
+    .badgeDone{
+      border-color: rgba(34,197,94,.28);
+      background: linear-gradient(180deg, rgba(34,197,94,.14), rgba(255,255,255,.04));
     }
 
     .subtitle{
@@ -316,10 +355,11 @@
       padding:16px;
       border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(800px 120px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
-        radial-gradient(800px 120px at 90% 0%, rgba(96,165,250,.08), transparent 55%),
+        radial-gradient(900px 140px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
+        radial-gradient(900px 140px at 90% 0%, rgba(96,165,250,.09), transparent 55%),
         rgba(255,255,255,.05);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 30px rgba(0,0,0,.35);
+      transform: translateZ(0);
     }
 
     .cardHead{
@@ -336,24 +376,45 @@
       letter-spacing:.16em;
       text-transform:uppercase;
       color: rgba(245,247,255,.64);
-      font-weight:600;
+      font-weight:700;
     }
     .hint{ font-size:12px; color: rgba(245,247,255,.62); }
 
     .contentText{
-      font-size:15px;
+      font-size: var(--bodySize);
       line-height:1.72;
       color: rgba(245,247,255,.92);
       white-space:pre-wrap;
     }
 
-    /* “Million-dollar” scripture typography */
+    /* Scripture styling */
     #verseText{
       font-family: var(--serif);
-      font-size:18px;
-      line-height:1.85;
+      font-size: var(--verseSize);
+      line-height:1.9;
       letter-spacing:.1px;
-      color: rgba(245,247,255,.94);
+      color: rgba(245,247,255,.95);
+      position:relative;
+    }
+    .verseQuote{
+      position:relative;
+      padding-left:14px;
+    }
+    .verseQuote:before{
+      content:"“";
+      position:absolute;
+      left:-2px;
+      top:-6px;
+      font-family: var(--serif);
+      font-size:42px;
+      color: rgba(253,186,116,.38);
+      line-height:1;
+    }
+    .verseRefLine{
+      margin-top:10px;
+      color: rgba(245,247,255,.72);
+      font-size:13px;
+      font-family: var(--font);
     }
 
     textarea{
@@ -367,18 +428,19 @@
 
     .footerTip{
       padding: 0 18px 18px 18px;
-      color: rgba(245,247,255,.56);
+      color: rgba(245,247,255,.58);
       font-size:12px;
     }
 
-    /* ===== Sidebar ===== */
+    /* Sidebar */
     .sideTop{
       padding:18px;
       border-bottom: 1px solid rgba(255,255,255,.06);
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:12px;
+      gap:10px;
+      flex-wrap:wrap;
     }
     .sideTop h3{
       margin:0;
@@ -386,11 +448,10 @@
       letter-spacing:.18em;
       text-transform:uppercase;
       color: rgba(245,247,255,.76);
-      font-weight:700;
+      font-weight:800;
     }
-
     .sideList{
-      height: calc(100% - 66px);
+      height: calc(100% - 74px);
       overflow:auto;
       padding:12px;
     }
@@ -428,6 +489,10 @@
         linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.30), rgba(139,92,246,.30)) border-box;
       box-shadow: 0 18px 40px rgba(253,186,116,.08);
     }
+    .dayItem.today{
+      outline: 2px solid rgba(96,165,250,.18);
+      outline-offset: 2px;
+    }
 
     .dayLeft{ min-width:0; display:flex; flex-direction:column; gap:4px; }
     .dayTitleRow{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
@@ -447,15 +512,182 @@
       gap:6px;
     }
     .check{ color: rgba(34,197,94,.95); }
+    .spark{ color: rgba(96,165,250,.95); }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 1050px){
+    /* Progress ring */
+    .ringWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .ring{
+      width:34px; height:34px;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+    }
+    .ringText{
+      font-size:12px;
+      color: rgba(245,247,255,.78);
+      line-height:1.2;
+    }
+    .ringText strong{ color: rgba(245,247,255,.95); }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform: translateX(-50%) translateY(20px);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index:50;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,14,30,.72);
+      backdrop-filter: blur(10px);
+      padding:10px 12px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      color: rgba(245,247,255,.92);
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.50);
+      backdrop-filter: blur(4px);
+      display:none;
+      z-index:60;
+    }
+    .overlay.show{ display:block; }
+    .modal{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%);
+      width: min(680px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      overflow:auto;
+      z-index:61;
+
+      border-radius: var(--r28);
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(900px 220px at 10% 0%, rgba(253,186,116,.12), transparent 55%),
+        radial-gradient(900px 220px at 90% 0%, rgba(96,165,250,.10), transparent 55%),
+        rgba(10,14,30,.86);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      display:none;
+    }
+    .modal.show{ display:block; }
+    .modalHeader{
+      padding:16px 16px 10px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .modalHeader h3{
+      margin:0;
+      font-family: var(--serif);
+      font-weight:600;
+      font-size:22px;
+      letter-spacing:-.2px;
+    }
+    .modalBody{ padding:14px 16px 16px 16px; }
+    .modalBody p{ margin:10px 0; color: rgba(245,247,255,.82); font-size:14px; line-height:1.6; }
+    .modalGrid{
+      display:grid;
+      gap:10px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .smallCard{
+      border-radius: var(--r20);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      padding:12px;
+    }
+    .smallCard .label{ margin-bottom:8px; display:block; }
+    .smallRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+    /* Drawer (mobile Days list) */
+    .drawerOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.52);
+      backdrop-filter: blur(4px);
+      display:none;
+      z-index:70;
+    }
+    .drawerOverlay.show{ display:block; }
+    .drawer{
+      position:fixed;
+      top:0;
+      right:0;
+      height:100%;
+      width: min(420px, 92vw);
+      transform: translateX(110%);
+      transition: transform .22s ease;
+      z-index:71;
+
+      border-left:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(900px 220px at 10% 0%, rgba(253,186,116,.12), transparent 55%),
+        radial-gradient(900px 220px at 90% 0%, rgba(96,165,250,.10), transparent 55%),
+        rgba(10,14,30,.92);
+      backdrop-filter: blur(14px);
+      box-shadow: -26px 0 80px rgba(0,0,0,.55);
+      display:flex;
+      flex-direction:column;
+    }
+    .drawer.show{ transform: translateX(0); }
+    .drawerHeader{
+      padding:16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .drawerHeader strong{
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      font-size:12px;
+      color: rgba(245,247,255,.78);
+    }
+    .drawerBody{
+      padding:12px;
+      overflow:auto;
+    }
+
+    /* Focus mode */
+    .focusMode .topbar{ position:sticky; top:0; z-index:40; }
+    .focusMode .main{ grid-template-columns: 1fr; }
+    .focusMode #rightPanel{ display:none; }
+
+    /* Responsive */
+    @media (max-width: 1100px){
       body{ overflow:auto; }
       .app{ height:auto; }
       .main{ grid-template-columns: 1fr; height:auto; }
       .panel{ height:auto; }
-      .sideList{ height:auto; max-height: 440px; }
+      .sideList{ height:auto; max-height: 460px; }
       .meta{ align-items:flex-start; min-width:auto; }
+      #rightPanel{ display:none; } /* hide desktop sidebar on small widths */
+      #openDaysBtn{ display:inline-flex !important; } /* show drawer button */
+    }
+    @media (min-width: 1101px){
+      #openDaysBtn{ display:none !important; }
     }
     @media (max-width: 600px){
       .controls{ justify-content:flex-start; }
@@ -464,13 +696,13 @@
       .meta{ width:100%; align-items:flex-start; }
       .metaRow{ justify-content:flex-start; }
       .titleBlock h2{ font-size:24px; }
-      #verseText{ font-size:18px; }
+      .modalGrid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
+  <div class="app" id="appRoot">
     <header class="topbar">
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
@@ -481,6 +713,8 @@
       </div>
 
       <div class="controls">
+        <button id="openDaysBtn" class="btn" type="button">📚 Days</button>
+
         <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
         <select id="topicSelect"></select>
 
@@ -492,20 +726,36 @@
         <button id="jumpBtn" class="btn" type="button">Go</button>
 
         <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
-        <button id="startBtn" class="btn btnSoft" type="button">✨ Start here</button>
-        <button id="clearBtn" class="btn btnWarn" type="button">Clear</button>
+        <button id="startBtn" class="btn btnSoft" type="button">✨ Start</button>
+        <button id="helpBtn" class="btn" type="button">❔ Help</button>
       </div>
 
       <div class="meta">
         <div class="metaRow">
           <span id="dateLabel"></span>
+
           <span class="pill"><strong id="dayPill">Day —</strong></span>
+
+          <span class="pill ringWrap">
+            <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+              <path d="M18 2.8a15.2 15.2 0 1 1 0 30.4a15.2 15.2 0 1 1 0-30.4"
+                fill="none" stroke="rgba(255,255,255,.10)" stroke-width="3.2" />
+              <path id="ringArc" d="M18 2.8a15.2 15.2 0 1 1 0 30.4a15.2 15.2 0 1 1 0-30.4"
+                fill="none" stroke="rgba(96,165,250,.95)" stroke-linecap="round" stroke-width="3.2"
+                stroke-dasharray="0 100" />
+            </svg>
+            <span class="ringText"><strong id="pctLabel">0%</strong><br><span style="color:rgba(245,247,255,.62)">complete</span></span>
+          </span>
+
           <span class="pill">Streak <strong id="streakLabel">0</strong></span>
         </div>
+
         <div class="metaRow">
           <span class="pill">Showing <strong id="countLabel">0</strong></span>
           <span class="pill">Selected <strong id="selectedLabel">—</strong></span>
           <span class="pill">Done <strong id="doneLabel">0</strong></span>
+          <button id="focusBtn" class="btn" type="button">🧘 Focus</button>
+          <button id="settingsBtn" class="btn" type="button">⚙️</button>
         </div>
       </div>
     </header>
@@ -514,16 +764,27 @@
       <section class="panel">
         <div class="panelHeader">
           <div>
-            <div class="titleBlock"><h2 id="dayTitle">Loading…</h2></div>
+            <div class="titleBlock">
+              <h2 id="dayTitle">Loading…</h2>
+            </div>
+
+            <div class="badgeRow">
+              <span id="todayBadge" class="badge badgeToday" style="display:none;">🌤️ Today’s reading</span>
+              <span id="doneBadge" class="badge badgeDone" style="display:none;">✅ Completed</span>
+            </div>
+
             <div class="subtitle">
               <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
               <span class="pill">Reference: <strong id="refLabel">—</strong></span>
             </div>
           </div>
+
           <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
             <button id="completeBtn" class="btn btnGood" type="button">✅ Mark complete</button>
             <button id="copyBtn" class="btn" type="button">📋 Copy</button>
             <button id="shareBtn" class="btn" type="button">🔗 Share</button>
+            <button id="exportBtn" class="btn" type="button">⬇ Export</button>
+            <button id="importBtn" class="btn" type="button">⬆ Import</button>
           </div>
         </div>
 
@@ -533,13 +794,15 @@
               <div class="label">Scripture (KJV)</div>
               <div class="hint" id="verseStatus">Auto-loaded</div>
             </div>
-            <div id="verseText" class="contentText">Select a day to see the verse.</div>
+            <div id="verseText" class="contentText">
+              Select a day to see the verse.
+            </div>
           </article>
 
           <article class="card">
             <div class="cardHead">
-              <div class="label">Today's Challenge</div>
-              <div class="hint">Suggested time: 10 minutes</div>
+              <div class="label">Today’s Challenge</div>
+              <div class="hint">10 minutes. Small wins count.</div>
             </div>
             <div id="challengeText" class="contentText">—</div>
           </article>
@@ -547,7 +810,7 @@
           <article class="card">
             <div class="cardHead">
               <div class="label">Reflection</div>
-              <div class="hint">Save a quick note (optional)</div>
+              <div class="hint">Write one honest line.</div>
             </div>
             <div id="reflectionText" class="contentText">—</div>
             <div style="height:10px"></div>
@@ -559,34 +822,87 @@
         <div class="footerTip" id="footerTip"></div>
       </section>
 
-      <aside class="panel">
+      <!-- Desktop sidebar (hidden on smaller screens; mobile uses drawer) -->
+      <aside class="panel" id="rightPanel">
         <div class="sideTop">
           <h3>Days</h3>
-          <div class="pill">Tap to open</div>
+          <div class="pill">Click to open</div>
         </div>
         <div class="sideList" id="daysList"></div>
       </aside>
     </main>
   </div>
 
+  <!-- Mobile drawer -->
+  <div class="drawerOverlay" id="drawerOverlay"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawerHeader">
+      <strong>Days</strong>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span class="pill">Tap a day</span>
+        <button class="btn" id="closeDrawerBtn" type="button">✕</button>
+      </div>
+    </div>
+    <div class="drawerBody" id="drawerDays"></div>
+  </div>
+
+  <!-- Help / Settings Modal -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="modal">
+    <div class="modalHeader">
+      <h3 id="modalTitle">Help</h3>
+      <button class="btn" id="closeModalBtn" type="button">✕</button>
+    </div>
+    <div class="modalBody" id="modalBody"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Hidden file input for import -->
+  <input id="importFile" type="file" accept="application/json" style="display:none;" />
+
   <script>
   (() => {
     'use strict';
 
+    // ===== CONFIG =====
     const PLAN_URL = 'plan.json';
+
+    // Versioned keys: prevents old testing data (like Day 365) from causing weird starts.
+    // If you ever need a “global reset,” bump these to v5, v6, etc.
+    const KEY_LAST = 'ovt_lastDay_v4';
+    const KEY_PROGRESS = 'ovt_progress_v4';
+    const KEY_SETTINGS = 'ovt_settings_v4';
+
     const DEFAULT_START_DAY = 1;
 
-    const KEY_LAST = 'ovt_lastDay';
-    const KEY_PROGRESS = 'ovt_progress_v1';
-
+    // Verse API
     const VERSE_API_BASE = 'https://bible-api.com/';
     const VERSE_TRANSLATION = 'kjv';
     const VERSE_TIMEOUT_MS = 12000;
     const VERSE_CACHE_PREFIX = 'ovt_kjv_';
 
+    // ===== DOM =====
     const $ = (id) => document.getElementById(id);
 
     const el = {
+      appRoot: $('appRoot'),
+
+      openDaysBtn: $('openDaysBtn'),
+      drawerOverlay: $('drawerOverlay'),
+      drawer: $('drawer'),
+      closeDrawerBtn: $('closeDrawerBtn'),
+      drawerDays: $('drawerDays'),
+
+      overlay: $('overlay'),
+      modal: $('modal'),
+      modalTitle: $('modalTitle'),
+      modalBody: $('modalBody'),
+      closeModalBtn: $('closeModalBtn'),
+
+      toast: $('toast'),
+
       searchInput: $('searchInput'),
       topicSelect: $('topicSelect'),
       prevBtn: $('prevBtn'),
@@ -596,7 +912,10 @@
       jumpBtn: $('jumpBtn'),
       todayBtn: $('todayBtn'),
       startBtn: $('startBtn'),
-      clearBtn: $('clearBtn'),
+      helpBtn: $('helpBtn'),
+
+      focusBtn: $('focusBtn'),
+      settingsBtn: $('settingsBtn'),
 
       dateLabel: $('dateLabel'),
       dayPill: $('dayPill'),
@@ -605,13 +924,22 @@
       streakLabel: $('streakLabel'),
       doneLabel: $('doneLabel'),
 
+      pctLabel: $('pctLabel'),
+      ringArc: $('ringArc'),
+
       dayTitle: $('dayTitle'),
       topicLabel: $('topicLabel'),
       refLabel: $('refLabel'),
 
+      todayBadge: $('todayBadge'),
+      doneBadge: $('doneBadge'),
+
       completeBtn: $('completeBtn'),
       copyBtn: $('copyBtn'),
       shareBtn: $('shareBtn'),
+      exportBtn: $('exportBtn'),
+      importBtn: $('importBtn'),
+      importFile: $('importFile'),
 
       verseText: $('verseText'),
       verseStatus: $('verseStatus'),
@@ -619,11 +947,12 @@
       reflectionText: $('reflectionText'),
       notesInput: $('notesInput'),
       notesStatus: $('notesStatus'),
-
       footerTip: $('footerTip'),
+
       daysList: $('daysList')
     };
 
+    // ===== STATE =====
     let plan = [];
     let filtered = [];
     let selectedDay = null;
@@ -631,7 +960,9 @@
     let lastVerseRef = null;
 
     let progress = { doneDays: {}, notes: {} };
+    let settings = { focus:false, verseSize:18, bodySize:15 };
 
+    // ===== HELPERS =====
     const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
     const safe = (v) => (v == null ? '' : String(v)).trim();
     const norm = (s) => safe(s).toLowerCase();
@@ -642,7 +973,6 @@
       const dd = String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     }
-
     function formatDate(d){
       return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
     }
@@ -658,6 +988,7 @@
     function todayPlanDay(){
       const now = new Date();
       const doy = dayOfYear(now);
+      // Plan is 1..365; map leap-day to 365
       if (isLeapYear(now.getFullYear()) && doy === 366) return 365;
       return clamp(doy, 1, 365);
     }
@@ -669,36 +1000,16 @@
       const n = parseInt(qs, 10);
       return Number.isFinite(n) ? clamp(n, 1, 365) : null;
     }
-
     function setURLDay(day){
       const url = new URL(location.href);
       url.searchParams.set('day', String(day));
       history.replaceState(null, '', url.toString());
     }
 
-    function saveLastDay(day){
-      try { localStorage.setItem(KEY_LAST, String(day)); } catch {}
-    }
-    function loadLastDay(){
-      try {
-        const n = parseInt(localStorage.getItem(KEY_LAST), 10);
-        return Number.isFinite(n) ? clamp(n,1,365) : null;
-      } catch { return null; }
-    }
-
-    function loadProgress(){
-      try{
-        const raw = localStorage.getItem(KEY_PROGRESS);
-        if (!raw) return;
-        const obj = JSON.parse(raw);
-        if (obj && typeof obj === 'object'){
-          progress.doneDays = obj.doneDays || {};
-          progress.notes = obj.notes || {};
-        }
-      } catch {}
-    }
-    function saveProgress(){
-      try { localStorage.setItem(KEY_PROGRESS, JSON.stringify(progress)); } catch {}
+    function toast(msg){
+      el.toast.textContent = msg;
+      el.toast.classList.add('show');
+      setTimeout(()=>el.toast.classList.remove('show'), 1400);
     }
 
     function setVerseStatus(msg, type='info'){
@@ -731,6 +1042,60 @@
       return Array.from(set).sort((a,b)=>a.localeCompare(b));
     }
 
+    // ===== STORAGE =====
+    function saveLastDay(day){
+      try { localStorage.setItem(KEY_LAST, String(day)); } catch {}
+    }
+    function loadLastDay(){
+      try {
+        const n = parseInt(localStorage.getItem(KEY_LAST), 10);
+        return Number.isFinite(n) ? clamp(n,1,365) : null;
+      } catch { return null; }
+    }
+
+    function loadProgress(){
+      try{
+        const raw = localStorage.getItem(KEY_PROGRESS);
+        if (!raw) return;
+        const obj = JSON.parse(raw);
+        if (obj && typeof obj === 'object'){
+          progress.doneDays = obj.doneDays || {};
+          progress.notes = obj.notes || {};
+        }
+      } catch {}
+    }
+    function saveProgress(){
+      try { localStorage.setItem(KEY_PROGRESS, JSON.stringify(progress)); } catch {}
+    }
+
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(KEY_SETTINGS);
+        if (!raw) return;
+        const obj = JSON.parse(raw);
+        if (obj && typeof obj === 'object'){
+          settings = { ...settings, ...obj };
+        }
+      } catch {}
+    }
+    function saveSettings(){
+      try { localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings)); } catch {}
+    }
+
+    function applySettings(){
+      settings.verseSize = clamp(Number(settings.verseSize || 18), 16, 24);
+      settings.bodySize = clamp(Number(settings.bodySize || 15), 14, 18);
+
+      document.documentElement.style.setProperty('--verseSize', settings.verseSize + 'px');
+      document.documentElement.style.setProperty('--bodySize', settings.bodySize + 'px');
+
+      if (settings.focus) el.appRoot.classList.add('focusMode');
+      else el.appRoot.classList.remove('focusMode');
+
+      el.focusBtn.textContent = settings.focus ? '🧘 Focus: On' : '🧘 Focus';
+    }
+
+    // ===== PROGRESS =====
     function computeStreak(){
       const doneDates = new Set(Object.values(progress.doneDays || {}));
       let streak = 0;
@@ -741,19 +1106,35 @@
       }
       return streak;
     }
-    function updateProgressBadges(){
-      el.doneLabel.textContent = String(Object.keys(progress.doneDays || {}).length);
-      el.streakLabel.textContent = String(computeStreak());
+    function doneCount(){
+      return Object.keys(progress.doneDays || {}).length;
     }
     function isDayDone(day){
       return Boolean(progress.doneDays && progress.doneDays[String(day)]);
     }
+    function completionPct(){
+      return plan.length ? Math.round((doneCount() / plan.length) * 100) : 0;
+    }
+    function updateProgressBadges(){
+      const d = doneCount();
+      const pct = completionPct();
+      el.doneLabel.textContent = String(d);
+      el.streakLabel.textContent = String(computeStreak());
+      el.pctLabel.textContent = pct + '%';
+
+      // SVG ring: use pathLength=100 via dasharray trick
+      const arc = Math.max(0, Math.min(100, pct));
+      el.ringArc.setAttribute('stroke-dasharray', `${arc} ${100-arc}`);
+      el.ringArc.setAttribute('stroke', arc >= 66 ? 'rgba(34,197,94,.95)' : (arc >= 33 ? 'rgba(96,165,250,.95)' : 'rgba(253,186,116,.95)'));
+    }
     function setCompleteButtonState(){
       const done = selectedDay != null && isDayDone(selectedDay);
       el.completeBtn.textContent = done ? '✅ Completed' : '✅ Mark complete';
-      el.completeBtn.style.opacity = done ? '0.88' : '1';
+      el.completeBtn.style.opacity = done ? '0.90' : '1';
+      el.doneBadge.style.display = done ? 'inline-flex' : 'none';
     }
 
+    // ===== VERSE =====
     function cacheGet(ref){
       try { return localStorage.getItem(VERSE_CACHE_PREFIX + ref); } catch { return null; }
     }
@@ -785,6 +1166,21 @@
       return text;
     }
 
+    function formatVerseBlock(verseText, ref){
+      const clean = safe(verseText).replace(/\s+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+      return `<div class="verseQuote">${escapeHTML(clean)}</div><div class="verseRefLine">— ${escapeHTML(ref)} (KJV)</div>`;
+    }
+
+    function escapeHTML(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#39;");
+    }
+
+    // ===== FILTERS =====
     function applyFilters(){
       const q = norm(el.searchInput.value);
       const topic = el.topicSelect.value;
@@ -798,16 +1194,17 @@
       });
 
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
-      renderSidebar();
+      renderDaysLists();
 
       if (selectedDay != null){
         const idx = filtered.findIndex(x => x.day === selectedDay);
-        if (idx >= 0){ selectedIndex = idx; highlightSidebar(); return; }
+        if (idx >= 0){ selectedIndex = idx; highlightDays(); return; }
       }
       if (filtered.length) selectDay(filtered[0].day);
       else renderEmpty();
     }
 
+    // ===== RENDER =====
     function renderEmpty(){
       el.dayTitle.textContent = 'No results';
       el.topicLabel.textContent = '—';
@@ -820,58 +1217,87 @@
       el.dayPill.textContent = 'Day —';
       el.selectedLabel.textContent = '—';
       el.footerTip.textContent = '';
+      el.todayBadge.style.display = 'none';
+      el.doneBadge.style.display = 'none';
       setCompleteButtonState();
       updateProgressBadges();
     }
 
-    function renderSidebar(){
+    function createDayItem(item){
+      const div = document.createElement('div');
+      div.className = 'dayItem';
+      div.dataset.day = String(item.day);
+
+      const left = document.createElement('div');
+      left.className = 'dayLeft';
+
+      const row = document.createElement('div');
+      row.className = 'dayTitleRow';
+
+      const strong = document.createElement('strong');
+      strong.textContent = `Day ${item.day}`;
+
+      const ref = document.createElement('span');
+      ref.className = 'refSmall';
+      ref.textContent = safe(item.reference);
+
+      row.appendChild(strong);
+      row.appendChild(ref);
+      left.appendChild(row);
+
+      const right = document.createElement('span');
+      right.className = 'topicPill';
+
+      const today = todayPlanDay();
+      const isToday = item.day === today;
+      const done = isDayDone(item.day);
+
+      right.innerHTML =
+        `${isToday ? '<span class="spark">✦</span>' : ''}` +
+        `${done ? '<span class="check">✓</span>' : ''}` +
+        `${escapeHTML(safe(item.topic) || 'General')}`;
+
+      if (isToday) div.classList.add('today');
+
+      div.appendChild(left);
+      div.appendChild(right);
+
+      div.addEventListener('click', () => {
+        selectDay(item.day);
+        closeDrawer();
+      });
+
+      return div;
+    }
+
+    function renderDaysLists(){
+      // Desktop list
       el.daysList.innerHTML = '';
-      const frag = document.createDocumentFragment();
+      const fragA = document.createDocumentFragment();
+      for (const item of filtered) fragA.appendChild(createDayItem(item));
+      el.daysList.appendChild(fragA);
 
-      for (const item of filtered){
-        const div = document.createElement('div');
-        div.className = 'dayItem';
-        div.dataset.day = String(item.day);
+      // Drawer list
+      el.drawerDays.innerHTML = '';
+      const fragB = document.createDocumentFragment();
+      for (const item of filtered) fragB.appendChild(createDayItem(item));
+      el.drawerDays.appendChild(fragB);
 
-        const left = document.createElement('div');
-        left.className = 'dayLeft';
-
-        const row = document.createElement('div');
-        row.className = 'dayTitleRow';
-
-        const strong = document.createElement('strong');
-        strong.textContent = `Day ${item.day}`;
-
-        const ref = document.createElement('span');
-        ref.className = 'refSmall';
-        ref.textContent = safe(item.reference);
-
-        row.appendChild(strong);
-        row.appendChild(ref);
-        left.appendChild(row);
-
-        const right = document.createElement('span');
-        right.className = 'topicPill';
-        right.innerHTML = `${isDayDone(item.day) ? '<span class="check">✓</span>' : ''}${safe(item.topic) || 'General'}`;
-
-        div.appendChild(left);
-        div.appendChild(right);
-
-        div.addEventListener('click', ()=>selectDay(item.day));
-        frag.appendChild(div);
-      }
-
-      el.daysList.appendChild(frag);
-      highlightSidebar();
+      highlightDays();
       updateProgressBadges();
     }
 
-    function highlightSidebar(){
-      const nodes = el.daysList.querySelectorAll('.dayItem');
-      nodes.forEach(n=>{
-        const d = parseInt(n.dataset.day,10);
-        n.classList.toggle('active', d === selectedDay);
-      });
+    function highlightDays(){
+      const markActive = (root) => {
+        const nodes = root.querySelectorAll('.dayItem');
+        nodes.forEach(n=>{
+          const d = parseInt(n.dataset.day,10);
+          n.classList.toggle('active', d === selectedDay);
+        });
+      };
+      markActive(el.daysList);
+      markActive(el.drawerDays);
+
       el.selectedLabel.textContent = selectedDay ? `Day ${selectedDay}` : '—';
     }
 
@@ -890,18 +1316,23 @@
       el.notesInput.value = progress.notes[String(selectedDay)] || '';
       el.notesStatus.textContent = 'Notes saved locally';
 
-      setCompleteButtonState();
-      updateProgressBadges();
-
       const today = todayPlanDay();
       const doneDates = new Set(Object.values(progress.doneDays || {}));
       const hasCompletedToday = doneDates.has(yyyyMMdd());
 
-      el.footerTip.textContent =
-        (selectedDay === today)
-          ? (hasCompletedToday ? 'You already completed today — beautiful work. ✨' : 'Today is a great day to do the challenge. 🌤️')
-          : 'Tip: “Today” jumps to the day-of-year. “Start here” begins the journey at Day 1.';
+      el.todayBadge.style.display = (selectedDay === today) ? 'inline-flex' : 'none';
+      setCompleteButtonState();
+      updateProgressBadges();
 
+      if (selectedDay === today){
+        el.footerTip.textContent = hasCompletedToday
+          ? 'You already completed today — beautiful work. ✨'
+          : 'Today is a great day to do the challenge. 🌤️';
+      } else {
+        el.footerTip.textContent = 'Tip: “Today” jumps to the day-of-year. “Start” begins at Day 1. Export/Import lets you move progress across devices.';
+      }
+
+      // Verse loading
       const ref = safe(item.reference);
       if (!ref){
         el.verseText.textContent = 'No reference found for this day.';
@@ -916,7 +1347,7 @@
 
       try{
         const verse = await loadVerseKJV(ref);
-        el.verseText.textContent = `${verse}\n\n— ${ref} (KJV)`;
+        el.verseText.innerHTML = formatVerseBlock(verse, ref);
         setVerseStatus('Loaded', 'good');
       } catch (err){
         const msg = err && err.message ? err.message : String(err || 'Unknown error');
@@ -929,19 +1360,23 @@
       }
     }
 
+    // ===== NAV =====
     function selectDay(day){
       const d = clamp(parseInt(day,10), 1, 365);
       selectedDay = d;
+
       selectedIndex = filtered.findIndex(x=>x.day===selectedDay);
 
       saveLastDay(selectedDay);
       setURLDay(selectedDay);
 
-      highlightSidebar();
+      highlightDays();
       renderSelected();
 
-      const active = el.daysList.querySelector(`.dayItem[data-day="${selectedDay}"]`);
-      if (active) active.scrollIntoView({ block:'nearest' });
+      const activeA = el.daysList.querySelector(`.dayItem[data-day="${selectedDay}"]`);
+      if (activeA) activeA.scrollIntoView({ block:'nearest' });
+      const activeB = el.drawerDays.querySelector(`.dayItem[data-day="${selectedDay}"]`);
+      if (activeB) activeB.scrollIntoView({ block:'nearest' });
     }
 
     function prev(){
@@ -960,6 +1395,7 @@
       if (!filtered.length) return;
       const idx = Math.floor(Math.random()*filtered.length);
       selectDay(filtered[idx].day);
+      toast('Random day');
     }
     function jump(){
       const v = parseInt(el.jumpInput.value, 10);
@@ -967,25 +1403,33 @@
       selectDay(clamp(v,1,365));
       el.jumpInput.value = '';
     }
-    function clearFilters(){
-      el.searchInput.value = '';
-      el.topicSelect.value = 'ALL';
-      applyFilters();
-    }
 
+    // ===== COMPLETE + NOTES =====
     function markComplete(){
       if (selectedDay == null) return;
       const dayKey = String(selectedDay);
       const todayKey = yyyyMMdd();
 
-      if (progress.doneDays[dayKey]) delete progress.doneDays[dayKey];
+      const wasDone = Boolean(progress.doneDays[dayKey]);
+
+      // toggle
+      if (wasDone) delete progress.doneDays[dayKey];
       else progress.doneDays[dayKey] = todayKey;
 
       saveProgress();
+
       setCompleteButtonState();
       updateProgressBadges();
-      renderSidebar();
+      renderDaysLists();
       renderSelected();
+
+      toast(wasDone ? 'Marked incomplete' : 'Completed ✔');
+
+      // Small purposeful celebration ONLY when completing today
+      if (!wasDone && selectedDay === todayPlanDay()){
+        // tiny confetti-like toast without animations spam
+        setTimeout(()=>toast('Nice work today ✨'), 300);
+      }
     }
 
     let notesTimer = null;
@@ -1000,6 +1444,150 @@
       }, 250);
     }
 
+    // ===== EXPORT / IMPORT =====
+    function exportProgress(){
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        progress,
+        settings
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'oneversetoday-progress.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast('Exported');
+    }
+
+    function importProgressFromFile(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const obj = JSON.parse(String(reader.result || '{}'));
+          if (!obj || typeof obj !== 'object') throw new Error('Invalid JSON');
+          if (obj.progress && typeof obj.progress === 'object'){
+            progress.doneDays = obj.progress.doneDays || {};
+            progress.notes = obj.progress.notes || {};
+            saveProgress();
+          }
+          if (obj.settings && typeof obj.settings === 'object'){
+            settings = { ...settings, ...obj.settings };
+            saveSettings();
+            applySettings();
+          }
+          renderDaysLists();
+          renderSelected();
+          toast('Imported ✔');
+        } catch (e){
+          toast('Import failed');
+          alert('Could not import that file. Make sure it is the exported JSON from this site.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== MODAL / DRAWER =====
+    function openModal(title, html){
+      el.modalTitle.textContent = title;
+      el.modalBody.innerHTML = html;
+      el.overlay.classList.add('show');
+      el.modal.classList.add('show');
+    }
+    function closeModal(){
+      el.overlay.classList.remove('show');
+      el.modal.classList.remove('show');
+    }
+
+    function openDrawer(){
+      el.drawerOverlay.classList.add('show');
+      el.drawer.classList.add('show');
+    }
+    function closeDrawer(){
+      el.drawerOverlay.classList.remove('show');
+      el.drawer.classList.remove('show');
+    }
+
+    function helpHTML(){
+      return `
+        <p><strong>Shortcuts</strong></p>
+        <div class="modalGrid">
+          <div class="smallCard"><span class="label">Navigate</span>
+            <p><span class="kbd">←</span> Prev &nbsp; <span class="kbd">→</span> Next</p>
+            <p><span class="kbd">R</span> Random &nbsp; <span class="kbd">T</span> Today &nbsp; <span class="kbd">S</span> Start</p>
+          </div>
+          <div class="smallCard"><span class="label">Actions</span>
+            <p><span class="kbd">C</span> Complete toggle</p>
+            <p><span class="kbd">/</span> Focus search</p>
+          </div>
+        </div>
+        <p><strong>How progress works</strong><br>
+        Your completion, streak, and notes are saved on <em>this device/browser</em>. Use <strong>Export</strong> / <strong>Import</strong> to move progress to another device.</p>
+        <p><strong>Share</strong><br>
+        Share copies a link like <code>?day=123</code> so anyone opens the same day.</p>
+      `;
+    }
+
+    function settingsHTML(){
+      const v = clamp(Number(settings.verseSize || 18), 16, 24);
+      const b = clamp(Number(settings.bodySize || 15), 14, 18);
+
+      return `
+        <div class="smallCard">
+          <span class="label">Reading</span>
+          <div class="smallRow">
+            <div>Focus mode</div>
+            <button class="btn" id="toggleFocusBtn" type="button">${settings.focus ? 'On' : 'Off'}</button>
+          </div>
+          <div style="height:10px"></div>
+          <div class="smallRow">
+            <div>Verse size</div>
+            <input class="input" id="verseSizeInput" style="width:120px" type="number" min="16" max="24" value="${v}">
+          </div>
+          <div style="height:10px"></div>
+          <div class="smallRow">
+            <div>Body size</div>
+            <input class="input" id="bodySizeInput" style="width:120px" type="number" min="14" max="18" value="${b}">
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="smallCard">
+          <span class="label">Data</span>
+          <p>Use Export/Import to move progress across devices.</p>
+          <div class="smallRow">
+            <button class="btn btnWarn" id="resetBtn" type="button">Reset this device</button>
+            <button class="btn" id="closeSettingsBtn" type="button">Done</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ===== START RULES =====
+    function pickInitialDay(){
+      // 1) URL ?day wins
+      const urlDay = getURLDay();
+      if (urlDay) return urlDay;
+
+      // 2) Returning visitor logic
+      const last = loadLastDay();
+      const today = todayPlanDay();
+      const doneDates = new Set(Object.values(progress.doneDays || {}));
+      const hasCompletedToday = doneDates.has(yyyyMMdd());
+
+      if (last){
+        return hasCompletedToday ? last : today;
+      }
+
+      // 3) First-time
+      return DEFAULT_START_DAY;
+    }
+
+    // ===== BOOT =====
     async function loadPlan(){
       const res = await fetch(PLAN_URL, { cache:'no-store' });
       if (!res.ok) throw new Error(`Failed to load plan.json (HTTP ${res.status})`);
@@ -1017,6 +1605,7 @@
         }))
         .sort((a,b)=>a.day-b.day);
 
+      // topics
       const topics = uniqueTopics(plan);
       el.topicSelect.innerHTML = '';
       const optAll = document.createElement('option');
@@ -1034,47 +1623,26 @@
 
       filtered = plan.slice();
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
-      renderSidebar();
 
-      // Start rules:
-      // 1) URL day wins
-      // 2) Returning: Today if not completed today, else last day
-      // 3) First-time: Day 1
-      const urlDay = getURLDay();
-      const last = loadLastDay();
-      const today = todayPlanDay();
-      const doneDates = new Set(Object.values(progress.doneDays || {}));
-      const hasCompletedToday = doneDates.has(yyyyMMdd());
+      renderDaysLists();
 
-      let initial;
-      if (urlDay) initial = urlDay;
-      else if (last) initial = hasCompletedToday ? last : today;
-      else initial = DEFAULT_START_DAY;
-
-      selectDay(initial);
+      // Start
+      selectDay(pickInitialDay());
     }
 
+    // ===== EVENTS =====
     el.searchInput.addEventListener('input', applyFilters);
     el.topicSelect.addEventListener('change', applyFilters);
 
     el.prevBtn.addEventListener('click', prev);
     el.nextBtn.addEventListener('click', next);
     el.randomBtn.addEventListener('click', random);
-    el.jumpBtn.addEventListener('click', jump);
-    el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
-    el.startBtn.addEventListener('click', () => selectDay(1));
-    el.clearBtn.addEventListener('click', clearFilters);
 
+    el.jumpBtn.addEventListener('click', jump);
     el.jumpInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') jump(); });
 
-    window.addEventListener('keydown', (e)=>{
-      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
-      if (e.key.toLowerCase() === 'r') random();
-      if (e.key.toLowerCase() === 't') selectDay(todayPlanDay());
-      if (e.key.toLowerCase() === 's') selectDay(1);
-    });
+    el.todayBtn.addEventListener('click', () => { selectDay(todayPlanDay()); toast('Today'); });
+    el.startBtn.addEventListener('click', () => { selectDay(1); toast('Start here'); });
 
     el.completeBtn.addEventListener('click', markComplete);
     el.notesInput.addEventListener('input', saveNotesDebounced);
@@ -1085,18 +1653,19 @@
       if (!item) return;
 
       const note = progress.notes[String(selectedDay)] || '';
+      const plainVerse = safe(el.verseText.textContent);
+
       const text =
         `Day ${item.day}\n` +
         `Topic: ${item.topic}\n` +
         `Reference: ${item.reference}\n\n` +
-        `${safe(el.verseText.textContent)}\n\n` +
+        `${plainVerse}\n\n` +
         `Challenge: ${item.challenge}\n\n` +
         `Reflection: ${item.reflection}\n\n` +
         (note ? `My note: ${note}\n` : '');
 
       await copyToClipboard(text);
-      setVerseStatus('Copied', 'good');
-      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
+      toast('Copied');
     });
 
     el.shareBtn.addEventListener('click', async ()=>{
@@ -1104,11 +1673,124 @@
       const url = new URL(location.href);
       url.searchParams.set('day', String(selectedDay));
       await copyToClipboard(url.toString());
-      setVerseStatus('Link copied', 'good');
-      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
+      toast('Link copied');
     });
 
+    el.exportBtn.addEventListener('click', exportProgress);
+    el.importBtn.addEventListener('click', () => el.importFile.click());
+    el.importFile.addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if (file) importProgressFromFile(file);
+      el.importFile.value = '';
+    });
+
+    // Drawer
+    el.openDaysBtn.addEventListener('click', openDrawer);
+    el.closeDrawerBtn.addEventListener('click', closeDrawer);
+    el.drawerOverlay.addEventListener('click', closeDrawer);
+
+    // Help modal
+    el.helpBtn.addEventListener('click', () => openModal('Help', helpHTML()));
+    el.settingsBtn.addEventListener('click', () => {
+      openModal('Settings', settingsHTML());
+
+      // wire modal buttons after open
+      setTimeout(() => {
+        const toggleFocusBtn = document.getElementById('toggleFocusBtn');
+        const verseSizeInput = document.getElementById('verseSizeInput');
+        const bodySizeInput = document.getElementById('bodySizeInput');
+        const resetBtn = document.getElementById('resetBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+        if (toggleFocusBtn){
+          toggleFocusBtn.addEventListener('click', () => {
+            settings.focus = !settings.focus;
+            saveSettings(); applySettings();
+            toggleFocusBtn.textContent = settings.focus ? 'On' : 'Off';
+          });
+        }
+        if (verseSizeInput){
+          verseSizeInput.addEventListener('change', () => {
+            settings.verseSize = Number(verseSizeInput.value || 18);
+            saveSettings(); applySettings();
+          });
+        }
+        if (bodySizeInput){
+          bodySizeInput.addEventListener('change', () => {
+            settings.bodySize = Number(bodySizeInput.value || 15);
+            saveSettings(); applySettings();
+          });
+        }
+        if (resetBtn){
+          resetBtn.addEventListener('click', () => {
+            const ok = confirm('Reset progress + settings on THIS device/browser? This cannot be undone (unless you exported).');
+            if (!ok) return;
+
+            try{
+              localStorage.removeItem(KEY_LAST);
+              localStorage.removeItem(KEY_PROGRESS);
+              localStorage.removeItem(KEY_SETTINGS);
+            } catch {}
+
+            // reset in-memory
+            progress = { doneDays:{}, notes:{} };
+            settings = { focus:false, verseSize:18, bodySize:15 };
+            applySettings();
+            renderDaysLists();
+            selectDay(1);
+            toast('Reset done');
+            closeModal();
+          });
+        }
+        if (closeSettingsBtn){
+          closeSettingsBtn.addEventListener('click', closeModal);
+        }
+      }, 0);
+    });
+
+    el.focusBtn.addEventListener('click', () => {
+      settings.focus = !settings.focus;
+      saveSettings(); applySettings();
+      toast(settings.focus ? 'Focus mode on' : 'Focus mode off');
+    });
+
+    el.overlay.addEventListener('click', closeModal);
+    el.closeModalBtn.addEventListener('click', closeModal);
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      // Modal/Drawing escape
+      if (e.key === 'Escape'){
+        closeModal();
+        closeDrawer();
+        return;
+      }
+
+      // Slash focuses search
+      if (e.key === '/' && !(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA' || e.target.tagName==='SELECT'))){
+        e.preventDefault();
+        el.searchInput.focus();
+        return;
+      }
+
+      // Ignore when typing
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
+
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+      if (e.key.toLowerCase() === 'r') random();
+      if (e.key.toLowerCase() === 't') selectDay(todayPlanDay());
+      if (e.key.toLowerCase() === 's') selectDay(1);
+      if (e.key.toLowerCase() === 'c') markComplete();
+      if (e.key.toLowerCase() === 'h') openModal('Help', helpHTML());
+      if (e.key.toLowerCase() === 'd') openDrawer();
+    });
+
+    // ===== INIT =====
     loadProgress();
+    loadSettings();
+    applySettings();
+
     loadPlan().catch(err=>{
       console.error(err);
       el.dayTitle.textContent = 'Error loading plan';
@@ -1116,6 +1798,7 @@
       setVerseStatus('Load failed', 'bad');
       el.footerTip.textContent = 'Make sure plan.json is in the same folder as index.html and is valid JSON.';
     });
+
   })();
   </script>
 </body>
