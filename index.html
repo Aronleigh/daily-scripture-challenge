@@ -4,15 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>One Verse Today — Daily Scripture Challenge</title>
+  <title>One Verse Today</title>
   <meta name="description" content="A tiny daily practice: Scripture + Action + Reflection." />
 
-  <!-- Premium typography -->
+  <!-- Premium fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Allows plan.json + KJV verse fetch + Google Fonts -->
+  <!-- CSP -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
@@ -27,39 +27,21 @@
 
   <style>
     :root{
-      /* Million-dollar palette: warm sunrise + cool sky, very controlled contrast */
-      --bg0:#050611;
-      --bg1:#070A1A;
-      --bg2:#0A1026;
-
-      --text:#F5F7FF;
-      --muted: rgba(245,247,255,.74);
-      --muted2: rgba(245,247,255,.56);
-
-      --sun:#FDBA74;   /* peach */
-      --sky:#60A5FA;   /* blue */
-      --leaf:#22C55E;  /* green */
-      --violet:#8B5CF6;
-
-      --stroke: rgba(255,255,255,.11);
-      --stroke2: rgba(255,255,255,.18);
-
-      --good:#34D399;
-      --warn:#FBBF24;
-      --bad:#FB7185;
-
-      --shadow: 0 24px 90px rgba(0,0,0,.62);
+      --bg0:#060616; --bg1:#090C20; --bg2:#0B1230;
+      --text:#F4F7FF;
+      --muted: rgba(244,247,255,.74);
+      --sun:#FDBA74; --sky:#60A5FA; --leaf:#22C55E; --violet:#8B5CF6;
+      --shadow: 0 26px 90px rgba(0,0,0,.62);
       --shadow2: 0 16px 55px rgba(0,0,0,.50);
-      --shadow3: 0 10px 24px rgba(0,0,0,.35);
+      --shadow3: 0 10px 22px rgba(0,0,0,.35);
+      --r28: 28px; --r20: 20px;
 
-      --r28: 28px;
-      --r20: 20px;
-      --r16: 16px;
-      --r12: 12px;
-
-      --font: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --verseSize: 18px;
+      --bodySize: 15px;
     }
 
     *{ box-sizing:border-box; }
@@ -69,48 +51,38 @@
       font-family: var(--font);
       color: var(--text);
       background:
-        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.20), transparent 60%),
-        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.18), transparent 60%),
-        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.10), transparent 62%),
-        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.14), transparent 64%),
+        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.22), transparent 60%),
+        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.20), transparent 60%),
+        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.11), transparent 62%),
+        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.15), transparent 64%),
         linear-gradient(180deg, var(--bg0), var(--bg2) 35%, var(--bg1));
-      overflow:hidden;
-      animation: glowFloat 14s ease-in-out infinite;
+      overflow:auto; /* IMPORTANT: no cropping */
     }
 
-    /* ultra-subtle texture (no images) */
     body:before{
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
-      background:
-        repeating-linear-gradient(
-          115deg,
-          rgba(255,255,255,.030) 0px,
-          rgba(255,255,255,.030) 1px,
-          rgba(255,255,255,0) 7px,
-          rgba(255,255,255,0) 18px
-        );
-      opacity:.16;
+      background: repeating-linear-gradient(
+        115deg,
+        rgba(255,255,255,.030) 0px,
+        rgba(255,255,255,.030) 1px,
+        rgba(255,255,255,0) 7px,
+        rgba(255,255,255,0) 18px
+      );
+      opacity:.14;
       mix-blend-mode: overlay;
     }
 
-    @keyframes glowFloat{
-      0%{ filter:saturate(1.00) brightness(1.00); }
-      50%{ filter:saturate(1.06) brightness(1.03); }
-      100%{ filter:saturate(1.00) brightness(1.00); }
-    }
-
     .app{
-      height:100%;
+      min-height:100%;
       padding:16px;
       display:grid;
       grid-template-rows:auto 1fr;
       gap:14px;
     }
 
-    /* ===== Topbar (premium glass + gradient edge) ===== */
     .topbar{
       border-radius: var(--r28);
       padding:14px;
@@ -119,31 +91,28 @@
       align-items:center;
       justify-content:space-between;
       flex-wrap:wrap;
-      position:relative;
       overflow:hidden;
 
       border:1px solid transparent;
       background:
         linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035)) padding-box,
-        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
+        linear-gradient(120deg, rgba(253,186,116,.48), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
       backdrop-filter: blur(12px);
       box-shadow: var(--shadow2);
     }
 
-    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
+    .brand{ display:flex; align-items:center; gap:12px; min-width:260px; }
     .logo{
       width:42px; height:42px; border-radius:16px;
       background:
         radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.40), transparent 60%),
         linear-gradient(135deg, rgba(253,186,116,.95), rgba(96,165,250,.80), rgba(139,92,246,.75));
-      box-shadow: 0 18px 44px rgba(253,186,116,.12), 0 18px 44px rgba(96,165,250,.10);
       border:1px solid rgba(255,255,255,.20);
+      box-shadow: 0 18px 44px rgba(253,186,116,.12), 0 18px 44px rgba(96,165,250,.10);
       flex:0 0 auto;
     }
-
-    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:700; }
+    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:800; }
     .brand p{ margin:3px 0 0 0; font-size:12px; color: var(--muted); }
-    .brand strong{ font-weight:700; }
 
     .controls{
       flex:1 1 auto;
@@ -156,11 +125,11 @@
     }
 
     .meta{
-      min-width: 300px;
+      min-width: 330px;
       display:flex;
       flex-direction:column;
       align-items:flex-end;
-      gap:6px;
+      gap:8px;
     }
     .metaRow{
       display:flex;
@@ -185,7 +154,6 @@
     }
     .pill strong{ color: var(--text); font-weight:800; }
 
-    /* ===== Inputs / buttons ===== */
     .input, select, textarea{
       border-radius:14px;
       border:1px solid rgba(255,255,255,.14);
@@ -193,18 +161,12 @@
       color: var(--text);
       outline:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-      transition: border .15s ease, background .15s ease, transform .06s ease;
+      font-family: var(--font);
     }
-    .input, select{
-      height:40px;
-      padding:0 12px;
-    }
+    .input, select{ height:40px; padding:0 12px; }
     .input::placeholder{ color: rgba(245,247,255,.42); }
-    .input:focus, select:focus, textarea:focus{
-      border-color: rgba(96,165,250,.55);
-      background: rgba(96,165,250,.09);
-    }
     select{ cursor:pointer; min-width:180px; }
+    textarea{ width:100%; padding:12px; min-height:110px; resize:vertical; font-size:14px; line-height:1.5; }
 
     .btn{
       height:40px;
@@ -219,7 +181,8 @@
       gap:8px;
       user-select:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06), var(--shadow3);
-      transition: transform .06s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
+      transition: transform .08s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
+      font-weight:600;
     }
     .btn:hover{
       border-color: rgba(255,255,255,.22);
@@ -227,7 +190,6 @@
       transform: translateY(-1px);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 38px rgba(0,0,0,.42);
     }
-    .btn:active{ transform: translateY(0px); }
 
     .btnPrimary{
       border:1px solid transparent;
@@ -239,40 +201,22 @@
       border:1px solid rgba(34,197,94,.40);
       background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.08));
     }
-    .btnWarn{
-      border:1px solid rgba(253,186,116,.48);
-      background: linear-gradient(180deg, rgba(253,186,116,.18), rgba(253,186,116,.07));
-    }
     .btnSoft{
-      border:1px solid rgba(96,165,250,.34);
-      background: linear-gradient(180deg, rgba(96,165,250,.14), rgba(255,255,255,.05));
+      border:1px solid rgba(253,186,116,.36);
+      background: linear-gradient(180deg, rgba(253,186,116,.13), rgba(255,255,255,.05));
     }
 
-    .kbd{
-      font-family: var(--mono);
-      font-size:11px;
-      padding:2px 6px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      color: rgba(245,247,255,.76);
-    }
-
-    /* ===== Layout ===== */
+    /* Main layout (desktop) */
     .main{
-      height:100%;
       display:grid;
       grid-template-columns: 1.45fr .85fr;
       gap:14px;
-      overflow:hidden;
+      align-items:start;
     }
 
     .panel{
-      height:100%;
       border-radius: var(--r28);
       overflow:hidden;
-      position:relative;
-
       border:1px solid transparent;
       background:
         linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.028)) padding-box,
@@ -291,7 +235,7 @@
       flex-wrap:wrap;
     }
 
-    .titleBlock h2{
+    .panelHeader h2{
       margin:0;
       font-size:28px;
       letter-spacing:-.2px;
@@ -301,7 +245,7 @@
     }
 
     .subtitle{
-      margin:12px 0 0 0;
+      margin-top:12px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
@@ -316,155 +260,131 @@
       padding:16px;
       border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(800px 120px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
-        radial-gradient(800px 120px at 90% 0%, rgba(96,165,250,.08), transparent 55%),
+        radial-gradient(900px 140px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
+        radial-gradient(900px 140px at 90% 0%, rgba(96,165,250,.09), transparent 55%),
         rgba(255,255,255,.05);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 30px rgba(0,0,0,.35);
     }
 
     .cardHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; flex-wrap:wrap; margin-bottom:10px;
     }
-
     .label{
-      font-size:11px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color: rgba(245,247,255,.64);
-      font-weight:600;
+      font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+      color: rgba(245,247,255,.64); font-weight:700;
     }
     .hint{ font-size:12px; color: rgba(245,247,255,.62); }
 
     .contentText{
-      font-size:15px;
+      font-size: var(--bodySize);
       line-height:1.72;
       color: rgba(245,247,255,.92);
       white-space:pre-wrap;
     }
 
-    /* “Million-dollar” scripture typography */
     #verseText{
       font-family: var(--serif);
-      font-size:18px;
-      line-height:1.85;
-      letter-spacing:.1px;
-      color: rgba(245,247,255,.94);
+      font-size: var(--verseSize);
+      line-height:1.9;
+      color: rgba(245,247,255,.95);
     }
-
-    textarea{
-      width:100%;
-      padding:12px;
-      min-height: 110px;
-      resize: vertical;
-      line-height:1.5;
-      font-size:14px;
+    .verseQuote{ position:relative; padding-left:14px; }
+    .verseQuote:before{
+      content:"“"; position:absolute; left:-2px; top:-6px;
+      font-family: var(--serif); font-size:42px;
+      color: rgba(253,186,116,.38); line-height:1;
     }
+    .verseRefLine{ margin-top:10px; color: rgba(245,247,255,.72); font-size:13px; font-family: var(--font); }
 
-    .footerTip{
-      padding: 0 18px 18px 18px;
-      color: rgba(245,247,255,.56);
-      font-size:12px;
-    }
-
-    /* ===== Sidebar ===== */
     .sideTop{
       padding:18px;
       border-bottom: 1px solid rgba(255,255,255,.06);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
     .sideTop h3{
-      margin:0;
-      font-size:12px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color: rgba(245,247,255,.76);
-      font-weight:700;
+      margin:0; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+      color: rgba(245,247,255,.76); font-weight:800;
     }
-
-    .sideList{
-      height: calc(100% - 66px);
-      overflow:auto;
-      padding:12px;
-    }
-    .sideList::-webkit-scrollbar{ width:10px; }
-    .sideList::-webkit-scrollbar-thumb{
-      background: rgba(255,255,255,.12);
-      border-radius:999px;
-      border:2px solid rgba(0,0,0,0);
-      background-clip: padding-box;
-    }
+    .sideList{ padding:12px; max-height: calc(100vh - 220px); overflow:auto; }
 
     .dayItem{
-      padding:12px 12px;
-      border-radius:18px;
+      padding:12px 12px; border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.045);
       margin-bottom:10px;
       cursor:pointer;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      transition: transform .08s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      transition: transform .08s ease, background .15s ease, border .15s ease;
     }
-    .dayItem:hover{
-      background: rgba(255,255,255,.065);
-      border-color: rgba(255,255,255,.18);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(0,0,0,.28);
-    }
+    .dayItem:hover{ background: rgba(255,255,255,.065); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
     .dayItem.active{
       border:1px solid transparent;
       background:
         linear-gradient(180deg, rgba(253,186,116,.12), rgba(255,255,255,.04)) padding-box,
         linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.30), rgba(139,92,246,.30)) border-box;
-      box-shadow: 0 18px 40px rgba(253,186,116,.08);
     }
-
     .dayLeft{ min-width:0; display:flex; flex-direction:column; gap:4px; }
     .dayTitleRow{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
     .dayTitleRow strong{ font-size:14px; }
     .refSmall{ font-size:12px; color: rgba(245,247,255,.68); }
-
     .topicPill{
-      font-size:11px;
-      padding:6px 10px;
-      border-radius:999px;
+      font-size:11px; padding:6px 10px; border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.06);
       color: rgba(245,247,255,.78);
       white-space:nowrap;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
+      display:inline-flex; align-items:center; gap:6px;
     }
     .check{ color: rgba(34,197,94,.95); }
+    .spark{ color: rgba(96,165,250,.95); }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 1050px){
-      body{ overflow:auto; }
-      .app{ height:auto; }
-      .main{ grid-template-columns: 1fr; height:auto; }
-      .panel{ height:auto; }
-      .sideList{ height:auto; max-height: 440px; }
-      .meta{ align-items:flex-start; min-width:auto; }
+    /* Drawer (mobile only) */
+    .drawerOverlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.52);
+      backdrop-filter: blur(4px);
+      display:none;
+      z-index:70;
     }
-    @media (max-width: 600px){
-      .controls{ justify-content:flex-start; }
-      #searchInput{ width:100%; min-width:0; flex:1 1 100%; }
-      #topicSelect{ width:100%; }
-      .meta{ width:100%; align-items:flex-start; }
+    .drawer{
+      position:fixed; top:0; right:0; height:100%;
+      width: min(420px, 92vw);
+      transform: translateX(110%);
+      transition: transform .22s ease;
+      z-index:71;
+      border-left:1px solid rgba(255,255,255,.12);
+      background: rgba(10,14,30,.92);
+      backdrop-filter: blur(14px);
+      box-shadow: -26px 0 80px rgba(0,0,0,.55);
+      display:flex; flex-direction:column;
+    }
+    .drawerOverlay.show{ display:block; }
+    .drawer.show{ transform: translateX(0); }
+    .drawerHeader{
+      padding:16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .drawerHeader strong{
+      letter-spacing:.16em; text-transform:uppercase; font-size:12px;
+      color: rgba(245,247,255,.78);
+    }
+    .drawerBody{ padding:12px; overflow:auto; }
+
+    /* SUPER IMPORTANT: force desktop vs mobile (prevents your screenshot issue) */
+    #openDaysBtn{ display:none !important; }
+    .drawerOverlay, .drawer{ display:none !important; }
+
+    @media (max-width: 1100px){
+      .main{ grid-template-columns: 1fr; }
+      #rightPanel{ display:none !important; }
+      #openDaysBtn{ display:inline-flex !important; }
+      .drawerOverlay, .drawer{ display:block !important; }
+      .meta{ align-items:flex-start; min-width:auto; }
       .metaRow{ justify-content:flex-start; }
-      .titleBlock h2{ font-size:24px; }
-      #verseText{ font-size:18px; }
+      #searchInput{ width:100%; flex:1 1 100%; }
+      #topicSelect{ width:100%; }
     }
   </style>
 </head>
@@ -481,19 +401,19 @@
       </div>
 
       <div class="controls">
+        <button id="openDaysBtn" class="btn" type="button">📚 Days</button>
         <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
         <select id="topicSelect"></select>
 
-        <button id="prevBtn" class="btn" type="button">◀ Prev <span class="kbd">←</span></button>
-        <button id="nextBtn" class="btn" type="button">Next ▶ <span class="kbd">→</span></button>
+        <button id="prevBtn" class="btn" type="button">◀ Prev</button>
+        <button id="nextBtn" class="btn" type="button">Next ▶</button>
         <button id="randomBtn" class="btn btnPrimary" type="button">🎲 Random</button>
 
         <input id="jumpInput" class="input" style="min-width:120px;width:120px;" inputmode="numeric" pattern="[0-9]*" placeholder="Day #" />
         <button id="jumpBtn" class="btn" type="button">Go</button>
 
         <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
-        <button id="startBtn" class="btn btnSoft" type="button">✨ Start here</button>
-        <button id="clearBtn" class="btn btnWarn" type="button">Clear</button>
+        <button id="startBtn" class="btn btnSoft" type="button">✨ Start</button>
       </div>
 
       <div class="meta">
@@ -501,11 +421,11 @@
           <span id="dateLabel"></span>
           <span class="pill"><strong id="dayPill">Day —</strong></span>
           <span class="pill">Streak <strong id="streakLabel">0</strong></span>
+          <span class="pill">Done <strong id="doneLabel">0</strong></span>
         </div>
         <div class="metaRow">
           <span class="pill">Showing <strong id="countLabel">0</strong></span>
           <span class="pill">Selected <strong id="selectedLabel">—</strong></span>
-          <span class="pill">Done <strong id="doneLabel">0</strong></span>
         </div>
       </div>
     </header>
@@ -514,12 +434,13 @@
       <section class="panel">
         <div class="panelHeader">
           <div>
-            <div class="titleBlock"><h2 id="dayTitle">Loading…</h2></div>
+            <h2 id="dayTitle">Loading…</h2>
             <div class="subtitle">
               <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
               <span class="pill">Reference: <strong id="refLabel">—</strong></span>
             </div>
           </div>
+
           <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
             <button id="completeBtn" class="btn btnGood" type="button">✅ Mark complete</button>
             <button id="copyBtn" class="btn" type="button">📋 Copy</button>
@@ -538,7 +459,7 @@
 
           <article class="card">
             <div class="cardHead">
-              <div class="label">Today's Challenge</div>
+              <div class="label">Today’s Challenge</div>
               <div class="hint">Suggested time: 10 minutes</div>
             </div>
             <div id="challengeText" class="contentText">—</div>
@@ -547,7 +468,7 @@
           <article class="card">
             <div class="cardHead">
               <div class="label">Reflection</div>
-              <div class="hint">Save a quick note (optional)</div>
+              <div class="hint">Write one honest line.</div>
             </div>
             <div id="reflectionText" class="contentText">—</div>
             <div style="height:10px"></div>
@@ -556,17 +477,27 @@
           </article>
         </div>
 
-        <div class="footerTip" id="footerTip"></div>
+        <div class="hint" style="padding:0 18px 18px 18px;" id="footerTip"></div>
       </section>
 
-      <aside class="panel">
+      <aside class="panel" id="rightPanel">
         <div class="sideTop">
           <h3>Days</h3>
-          <div class="pill">Tap to open</div>
+          <div class="pill">Click to open</div>
         </div>
         <div class="sideList" id="daysList"></div>
       </aside>
     </main>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div class="drawerOverlay" id="drawerOverlay"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawerHeader">
+      <strong>Days</strong>
+      <button class="btn" id="closeDrawerBtn" type="button">✕</button>
+    </div>
+    <div class="drawerBody" id="drawerDays"></div>
   </div>
 
   <script>
@@ -574,10 +505,10 @@
     'use strict';
 
     const PLAN_URL = 'plan.json';
-    const DEFAULT_START_DAY = 1;
 
-    const KEY_LAST = 'ovt_lastDay';
-    const KEY_PROGRESS = 'ovt_progress_v1';
+    // bump keys to reset old weird starts
+    const KEY_LAST = 'ovt_lastDay_v5';
+    const KEY_PROGRESS = 'ovt_progress_v5';
 
     const VERSE_API_BASE = 'https://bible-api.com/';
     const VERSE_TRANSLATION = 'kjv';
@@ -587,6 +518,12 @@
     const $ = (id) => document.getElementById(id);
 
     const el = {
+      openDaysBtn: $('openDaysBtn'),
+      drawerOverlay: $('drawerOverlay'),
+      drawer: $('drawer'),
+      closeDrawerBtn: $('closeDrawerBtn'),
+      drawerDays: $('drawerDays'),
+
       searchInput: $('searchInput'),
       topicSelect: $('topicSelect'),
       prevBtn: $('prevBtn'),
@@ -596,7 +533,6 @@
       jumpBtn: $('jumpBtn'),
       todayBtn: $('todayBtn'),
       startBtn: $('startBtn'),
-      clearBtn: $('clearBtn'),
 
       dateLabel: $('dateLabel'),
       dayPill: $('dayPill'),
@@ -619,8 +555,8 @@
       reflectionText: $('reflectionText'),
       notesInput: $('notesInput'),
       notesStatus: $('notesStatus'),
-
       footerTip: $('footerTip'),
+
       daysList: $('daysList')
     };
 
@@ -642,7 +578,6 @@
       const dd = String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     }
-
     function formatDate(d){
       return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
     }
@@ -669,7 +604,6 @@
       const n = parseInt(qs, 10);
       return Number.isFinite(n) ? clamp(n, 1, 365) : null;
     }
-
     function setURLDay(day){
       const url = new URL(location.href);
       url.searchParams.set('day', String(day));
@@ -710,27 +644,6 @@
       : 'rgba(245,247,255,.62)';
     }
 
-    async function copyToClipboard(text){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        try{ document.execCommand('copy'); } catch {}
-        ta.remove();
-        return true;
-      }
-    }
-
-    function uniqueTopics(items){
-      const set = new Set();
-      for (const it of items) set.add(safe(it.topic) || 'General');
-      return Array.from(set).sort((a,b)=>a.localeCompare(b));
-    }
-
     function computeStreak(){
       const doneDates = new Set(Object.values(progress.doneDays || {}));
       let streak = 0;
@@ -747,11 +660,6 @@
     }
     function isDayDone(day){
       return Boolean(progress.doneDays && progress.doneDays[String(day)]);
-    }
-    function setCompleteButtonState(){
-      const done = selectedDay != null && isDayDone(selectedDay);
-      el.completeBtn.textContent = done ? '✅ Completed' : '✅ Mark complete';
-      el.completeBtn.style.opacity = done ? '0.88' : '1';
     }
 
     function cacheGet(ref){
@@ -785,6 +693,25 @@
       return text;
     }
 
+    function escapeHTML(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#39;");
+    }
+    function formatVerseBlock(verseText, ref){
+      const clean = safe(verseText).replace(/\s+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+      return `<div class="verseQuote">${escapeHTML(clean)}</div><div class="verseRefLine">— ${escapeHTML(ref)} (KJV)</div>`;
+    }
+
+    function uniqueTopics(items){
+      const set = new Set();
+      for (const it of items) set.add(safe(it.topic) || 'General');
+      return Array.from(set).sort((a,b)=>a.localeCompare(b));
+    }
+
     function applyFilters(){
       const q = norm(el.searchInput.value);
       const topic = el.topicSelect.value;
@@ -798,80 +725,89 @@
       });
 
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
-      renderSidebar();
+      renderDaysLists();
 
       if (selectedDay != null){
         const idx = filtered.findIndex(x => x.day === selectedDay);
-        if (idx >= 0){ selectedIndex = idx; highlightSidebar(); return; }
+        if (idx >= 0){ selectedIndex = idx; highlightDays(); return; }
       }
       if (filtered.length) selectDay(filtered[0].day);
-      else renderEmpty();
     }
 
-    function renderEmpty(){
-      el.dayTitle.textContent = 'No results';
-      el.topicLabel.textContent = '—';
-      el.refLabel.textContent = '—';
-      el.verseText.textContent = 'Try clearing search or switching topics.';
-      setVerseStatus('No verse to load', 'warn');
-      el.challengeText.textContent = '—';
-      el.reflectionText.textContent = '—';
-      el.notesInput.value = '';
-      el.dayPill.textContent = 'Day —';
-      el.selectedLabel.textContent = '—';
-      el.footerTip.textContent = '';
-      setCompleteButtonState();
-      updateProgressBadges();
+    function createDayItem(item){
+      const div = document.createElement('div');
+      div.className = 'dayItem';
+      div.dataset.day = String(item.day);
+
+      const left = document.createElement('div');
+      left.className = 'dayLeft';
+
+      const row = document.createElement('div');
+      row.className = 'dayTitleRow';
+
+      const strong = document.createElement('strong');
+      strong.textContent = `Day ${item.day}`;
+
+      const ref = document.createElement('span');
+      ref.className = 'refSmall';
+      ref.textContent = safe(item.reference);
+
+      row.appendChild(strong);
+      row.appendChild(ref);
+      left.appendChild(row);
+
+      const right = document.createElement('span');
+      right.className = 'topicPill';
+
+      const today = todayPlanDay();
+      const isToday = item.day === today;
+      const done = isDayDone(item.day);
+
+      right.innerHTML =
+        `${isToday ? '<span class="spark">✦</span>' : ''}` +
+        `${done ? '<span class="check">✓</span>' : ''}` +
+        `${escapeHTML(safe(item.topic) || 'General')}`;
+
+      div.appendChild(left);
+      div.appendChild(right);
+
+      div.addEventListener('click', () => {
+        selectDay(item.day);
+        closeDrawer();
+      });
+
+      return div;
     }
 
-    function renderSidebar(){
+    function renderDaysLists(){
       el.daysList.innerHTML = '';
-      const frag = document.createDocumentFragment();
+      el.drawerDays.innerHTML = '';
+
+      const fragA = document.createDocumentFragment();
+      const fragB = document.createDocumentFragment();
 
       for (const item of filtered){
-        const div = document.createElement('div');
-        div.className = 'dayItem';
-        div.dataset.day = String(item.day);
-
-        const left = document.createElement('div');
-        left.className = 'dayLeft';
-
-        const row = document.createElement('div');
-        row.className = 'dayTitleRow';
-
-        const strong = document.createElement('strong');
-        strong.textContent = `Day ${item.day}`;
-
-        const ref = document.createElement('span');
-        ref.className = 'refSmall';
-        ref.textContent = safe(item.reference);
-
-        row.appendChild(strong);
-        row.appendChild(ref);
-        left.appendChild(row);
-
-        const right = document.createElement('span');
-        right.className = 'topicPill';
-        right.innerHTML = `${isDayDone(item.day) ? '<span class="check">✓</span>' : ''}${safe(item.topic) || 'General'}`;
-
-        div.appendChild(left);
-        div.appendChild(right);
-
-        div.addEventListener('click', ()=>selectDay(item.day));
-        frag.appendChild(div);
+        fragA.appendChild(createDayItem(item));
+        fragB.appendChild(createDayItem(item));
       }
 
-      el.daysList.appendChild(frag);
-      highlightSidebar();
+      el.daysList.appendChild(fragA);
+      el.drawerDays.appendChild(fragB);
+
+      highlightDays();
       updateProgressBadges();
     }
 
-    function highlightSidebar(){
-      const nodes = el.daysList.querySelectorAll('.dayItem');
-      nodes.forEach(n=>{
-        const d = parseInt(n.dataset.day,10);
-        n.classList.toggle('active', d === selectedDay);
-      });
+    function highlightDays(){
+      const markActive = (root) => {
+        const nodes = root.querySelectorAll('.dayItem');
+        nodes.forEach(n=>{
+          const d = parseInt(n.dataset.day,10);
+          n.classList.toggle('active', d === selectedDay);
+        });
+      };
+      markActive(el.daysList);
+      markActive(el.drawerDays);
       el.selectedLabel.textContent = selectedDay ? `Day ${selectedDay}` : '—';
     }
 
@@ -890,9 +826,6 @@
       el.notesInput.value = progress.notes[String(selectedDay)] || '';
       el.notesStatus.textContent = 'Notes saved locally';
 
-      setCompleteButtonState();
-      updateProgressBadges();
-
       const today = todayPlanDay();
       const doneDates = new Set(Object.values(progress.doneDays || {}));
       const hasCompletedToday = doneDates.has(yyyyMMdd());
@@ -900,8 +833,9 @@
       el.footerTip.textContent =
         (selectedDay === today)
           ? (hasCompletedToday ? 'You already completed today — beautiful work. ✨' : 'Today is a great day to do the challenge. 🌤️')
-          : 'Tip: “Today” jumps to the day-of-year. “Start here” begins the journey at Day 1.';
+          : 'Tip: “Today” jumps to the day-of-year. “Start” begins at Day 1.';
 
+      // verse
       const ref = safe(item.reference);
       if (!ref){
         el.verseText.textContent = 'No reference found for this day.';
@@ -916,7 +850,7 @@
 
       try{
         const verse = await loadVerseKJV(ref);
-        el.verseText.textContent = `${verse}\n\n— ${ref} (KJV)`;
+        el.verseText.innerHTML = formatVerseBlock(verse, ref);
         setVerseStatus('Loaded', 'good');
       } catch (err){
         const msg = err && err.message ? err.message : String(err || 'Unknown error');
@@ -937,11 +871,8 @@
       saveLastDay(selectedDay);
       setURLDay(selectedDay);
 
-      highlightSidebar();
+      highlightDays();
       renderSelected();
-
-      const active = el.daysList.querySelector(`.dayItem[data-day="${selectedDay}"]`);
-      if (active) active.scrollIntoView({ block:'nearest' });
     }
 
     function prev(){
@@ -967,11 +898,6 @@
       selectDay(clamp(v,1,365));
       el.jumpInput.value = '';
     }
-    function clearFilters(){
-      el.searchInput.value = '';
-      el.topicSelect.value = 'ALL';
-      applyFilters();
-    }
 
     function markComplete(){
       if (selectedDay == null) return;
@@ -982,9 +908,7 @@
       else progress.doneDays[dayKey] = todayKey;
 
       saveProgress();
-      setCompleteButtonState();
-      updateProgressBadges();
-      renderSidebar();
+      renderDaysLists();
       renderSelected();
     }
 
@@ -998,6 +922,30 @@
         el.notesStatus.textContent = 'Saved';
         setTimeout(()=>{ el.notesStatus.textContent = 'Notes saved locally'; }, 900);
       }, 250);
+    }
+
+    // Drawer controls
+    function openDrawer(){
+      el.drawerOverlay.classList.add('show');
+      el.drawer.classList.add('show');
+    }
+    function closeDrawer(){
+      el.drawerOverlay.classList.remove('show');
+      el.drawer.classList.remove('show');
+    }
+
+    // Start rules
+    function pickInitialDay(){
+      const urlDay = getURLDay();
+      if (urlDay) return urlDay;
+
+      const last = loadLastDay();
+      const today = todayPlanDay();
+      const doneDates = new Set(Object.values(progress.doneDays || {}));
+      const hasCompletedToday = doneDates.has(yyyyMMdd());
+
+      if (last) return hasCompletedToday ? last : today;
+      return 1;
     }
 
     async function loadPlan(){
@@ -1017,6 +965,7 @@
         }))
         .sort((a,b)=>a.day-b.day);
 
+      // topics
       const topics = uniqueTopics(plan);
       el.topicSelect.innerHTML = '';
       const optAll = document.createElement('option');
@@ -1034,26 +983,12 @@
 
       filtered = plan.slice();
       el.countLabel.textContent = `${filtered.length}/${plan.length}`;
-      renderSidebar();
 
-      // Start rules:
-      // 1) URL day wins
-      // 2) Returning: Today if not completed today, else last day
-      // 3) First-time: Day 1
-      const urlDay = getURLDay();
-      const last = loadLastDay();
-      const today = todayPlanDay();
-      const doneDates = new Set(Object.values(progress.doneDays || {}));
-      const hasCompletedToday = doneDates.has(yyyyMMdd());
-
-      let initial;
-      if (urlDay) initial = urlDay;
-      else if (last) initial = hasCompletedToday ? last : today;
-      else initial = DEFAULT_START_DAY;
-
-      selectDay(initial);
+      renderDaysLists();
+      selectDay(pickInitialDay());
     }
 
+    // Wire events
     el.searchInput.addEventListener('input', applyFilters);
     el.topicSelect.addEventListener('change', applyFilters);
 
@@ -1061,20 +996,10 @@
     el.nextBtn.addEventListener('click', next);
     el.randomBtn.addEventListener('click', random);
     el.jumpBtn.addEventListener('click', jump);
-    el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
-    el.startBtn.addEventListener('click', () => selectDay(1));
-    el.clearBtn.addEventListener('click', clearFilters);
-
     el.jumpInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') jump(); });
 
-    window.addEventListener('keydown', (e)=>{
-      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
-      if (e.key.toLowerCase() === 'r') random();
-      if (e.key.toLowerCase() === 't') selectDay(todayPlanDay());
-      if (e.key.toLowerCase() === 's') selectDay(1);
-    });
+    el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
+    el.startBtn.addEventListener('click', () => selectDay(1));
 
     el.completeBtn.addEventListener('click', markComplete);
     el.notesInput.addEventListener('input', saveNotesDebounced);
@@ -1085,37 +1010,42 @@
       if (!item) return;
 
       const note = progress.notes[String(selectedDay)] || '';
+      const plainVerse = safe(el.verseText.textContent);
+
       const text =
         `Day ${item.day}\n` +
         `Topic: ${item.topic}\n` +
         `Reference: ${item.reference}\n\n` +
-        `${safe(el.verseText.textContent)}\n\n` +
+        `${plainVerse}\n\n` +
         `Challenge: ${item.challenge}\n\n` +
         `Reflection: ${item.reflection}\n\n` +
         (note ? `My note: ${note}\n` : '');
 
-      await copyToClipboard(text);
-      setVerseStatus('Copied', 'good');
-      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
+      try{ await navigator.clipboard.writeText(text); } catch {}
     });
 
     el.shareBtn.addEventListener('click', async ()=>{
       if (selectedDay == null) return;
       const url = new URL(location.href);
       url.searchParams.set('day', String(selectedDay));
-      await copyToClipboard(url.toString());
-      setVerseStatus('Link copied', 'good');
-      setTimeout(()=>setVerseStatus('Auto-loaded', 'info'), 900);
+      try{ await navigator.clipboard.writeText(url.toString()); } catch {}
     });
 
+    el.openDaysBtn.addEventListener('click', openDrawer);
+    el.closeDrawerBtn.addEventListener('click', closeDrawer);
+    el.drawerOverlay.addEventListener('click', closeDrawer);
+
+    // Init
     loadProgress();
+    updateProgressBadges();
     loadPlan().catch(err=>{
       console.error(err);
       el.dayTitle.textContent = 'Error loading plan';
       el.verseText.textContent = String(err && err.message ? err.message : err);
       setVerseStatus('Load failed', 'bad');
-      el.footerTip.textContent = 'Make sure plan.json is in the same folder as index.html and is valid JSON.';
+      el.footerTip.textContent = 'Make sure plan.json is in the same folder and valid JSON.';
     });
+
   })();
   </script>
 </body>
