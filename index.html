@@ -2,878 +2,1042 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Daily Scripture Challenge</title>
-  <meta name="description" content="A tiny daily practice: Scripture → Action → Reflection." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>One Verse Today — Daily Scripture Challenge</title>
+  <meta name="description" content="A tiny daily practice: Scripture + Action + Reflection." />
 
-  <!-- Optional: nicer font (safe on GitHub Pages) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- ✅ Allows plan.json (same origin) + KJV verse fetch from bible-api.com -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    connect-src 'self' https://bible-api.com;
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+  ">
 
   <style>
     :root{
-      --bg0:#070A12;
-      --bg1:#0A1021;
+      --bg0:#060812;
+      --bg1:#0A0F24;
+      --bg2:#0D1634;
+
       --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.04);
-      --border: rgba(255,255,255,.10);
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --text: #EAF0FF;
-      --muted: rgba(234,240,255,.70);
-      --muted2: rgba(234,240,255,.52);
-      --accent: #7C5CFF;
-      --accent2:#29D3FF;
-      --good:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --radius: 18px;
-      --radius2: 26px;
+      --panel2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.16);
+
+      --text:#EAF0FF;
+      --muted: rgba(234,240,255,.72);
+      --muted2: rgba(234,240,255,.56);
+
+      --accent:#7C5CFF;
+      --accent2:#4DD6FF;
+      --good:#34D399;
+      --warn:#FBBF24;
+      --bad:#FB7185;
+
+      --shadow: 0 20px 70px rgba(0,0,0,.55);
+      --shadow2: 0 14px 40px rgba(0,0,0,.45);
+
+      --r12: 12px;
+      --r16: 16px;
+      --r20: 20px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color:var(--text);
+      font-family: var(--font);
+      color: var(--text);
       background:
-        radial-gradient(1000px 700px at 15% 10%, rgba(124,92,255,.30), transparent 60%),
-        radial-gradient(900px 650px at 90% 25%, rgba(41,211,255,.18), transparent 55%),
-        radial-gradient(800px 600px at 70% 100%, rgba(34,197,94,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+        radial-gradient(1200px 800px at 12% 8%, rgba(124,92,255,.25), transparent 58%),
+        radial-gradient(900px 700px at 85% 14%, rgba(77,214,255,.18), transparent 60%),
+        radial-gradient(900px 900px at 55% 92%, rgba(52,211,153,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 35%, var(--bg0));
+      overflow:hidden;
     }
 
-    .wrap{
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 22px 16px 70px;
+    a{ color:inherit; text-decoration:none; }
+
+    .app{
+      height:100%;
+      padding:14px;
+      display:grid;
+      grid-template-rows: auto 1fr;
+      gap:14px;
     }
 
-    /* Top header */
+    /* Top Bar */
     .topbar{
+      position:relative;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border-radius: var(--r20);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+      padding:14px;
+      overflow:hidden;
       display:flex;
+      gap:14px;
       align-items:center;
       justify-content:space-between;
-      gap:14px;
-      margin-bottom:14px;
+      flex-wrap:wrap;
     }
+    .topbar:before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(600px 220px at 20% 0%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(600px 220px at 80% 0%, rgba(77,214,255,.14), transparent 60%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .topbar > *{ position:relative; z-index:1; }
 
     .brand{
       display:flex;
-      gap:12px;
       align-items:center;
-      min-width:0;
+      gap:12px;
+      min-width: 270px;
     }
     .logo{
-      width:44px;
-      height:44px;
-      border-radius:14px;
+      width:40px;
+      height:40px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.22);
       background:
-        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.45), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.75), rgba(41,211,255,.45));
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.95), rgba(77,214,255,.70));
+      box-shadow: 0 12px 30px rgba(124,92,255,.22);
+      flex:0 0 auto;
     }
-    .logo::after{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.25) 50%, transparent 60%);
-      transform: rotate(20deg);
-      animation: shine 5.2s ease-in-out infinite;
-    }
-    @keyframes shine{
-      0%, 55% { transform: translateX(-40%) rotate(20deg); opacity:.0; }
-      65%     { opacity:.9; }
-      100%    { transform: translateX(40%) rotate(20deg); opacity:0; }
-    }
-
     .brand h1{
       margin:0;
-      font-size:18px;
-      font-weight:800;
+      font-size:15px;
       letter-spacing:.2px;
-      line-height:1.1;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      line-height:1.15;
     }
     .brand p{
-      margin:4px 0 0;
-      color:var(--muted2);
+      margin:2px 0 0 0;
       font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      color: var(--muted);
     }
 
-    .pillrow{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .controls{
+      flex:1 1 auto;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      min-width: 330px;
+    }
+
+    .meta{
+      min-width: 260px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+    }
+    .metaRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      font-size:12px;
+      color: var(--muted);
+      flex-wrap:wrap;
+    }
+
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 22px rgba(0,0,0,.25);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:600;
+      padding:8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
     }
-    .dot{
-      width:9px; height:9px; border-radius:999px;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 0 3px rgba(124,92,255,.16);
-    }
-
-    /* Card base */
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      border: 1px solid var(--border);
-      border-radius: var(--radius2);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-
-    /* Controls (sticky on desktop) */
-    .controls{
-      display:grid;
-      grid-template-columns: 1.4fr 1fr 1fr auto auto auto;
-      gap:10px;
-      padding: 14px;
-      position: sticky;
-      top: 10px;
-      z-index: 10;
-    }
-    @media (max-width: 980px){
-      .controls{
-        grid-template-columns: 1fr 1fr;
-        position: static;
-      }
-      .pillrow{ justify-content:flex-start; }
-    }
-
-    input, select, button{
-      width:100%;
-      padding: 11px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(8,12,22,.55);
+    .pill strong{
       color: var(--text);
-      outline:none;
-      font: inherit;
+      font-weight: 700;
     }
-    input::placeholder{ color: rgba(234,240,255,.45); }
 
-    button{
-      cursor:pointer;
-      font-weight:800;
-      letter-spacing:.2px;
-      transition: transform .08s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
-      user-select:none;
+    /* Inputs & Buttons */
+    .input, select{
+      height:38px;
+      border-radius: 12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding:0 12px;
+      outline:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      transition: border .15s ease, background .15s ease;
     }
-    button:hover{
-      border-color: rgba(124,92,255,.35);
-      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+    .input::placeholder{ color: rgba(234,240,255,.44); }
+    .input:focus, select:focus{
+      border-color: rgba(124,92,255,.60);
+      background: rgba(124,92,255,.08);
     }
-    button:active{ transform: translateY(1px); }
+    select{ cursor:pointer; min-width: 170px; }
 
     .btn{
-      background: rgba(255,255,255,.05);
-    }
-    .btn-primary{
-      background: linear-gradient(135deg, rgba(124,92,255,.80), rgba(41,211,255,.55));
-      border-color: rgba(255,255,255,.20);
-    }
-    .btn-good{
-      background: linear-gradient(135deg, rgba(34,197,94,.75), rgba(41,211,255,.35));
-      border-color: rgba(255,255,255,.18);
-    }
-
-    .subbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding: 0 14px 14px;
-      color: var(--muted2);
-      font-size: 12px;
-      border-top: 1px solid rgba(255,255,255,.08);
-      margin-top: 2px;
-    }
-    .subbar .left, .subbar .right{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .chip{
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-    }
-    .chip strong{ color: var(--text); }
-
-    .progress{
-      width: 220px;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 18px rgba(124,92,255,.25);
-      transition: width .35s ease;
-    }
-
-    /* Layout main */
-    .grid{
-      margin-top: 14px;
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:14px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    .detail{
-      padding: 18px;
-      border-radius: var(--radius2);
-    }
-
-    .dateRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom: 10px;
-    }
-    .titleRow{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .titleRow h2{
-      margin:0;
-      font-size: 26px;
-      letter-spacing: .2px;
-      line-height: 1.1;
-    }
-    .titleRow .meta{
-      display:flex; gap:8px; flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .badge{
+      height:38px;
+      padding:0 12px;
+      border-radius: 12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
+      user-select:none;
+      transition: transform .05s ease, border .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .btn:hover{ border-color: var(--stroke2); background: rgba(255,255,255,.08); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btnPrimary{
+      border-color: rgba(124,92,255,.50);
+      background: linear-gradient(180deg, rgba(124,92,255,.22), rgba(124,92,255,.10));
+      box-shadow: 0 14px 30px rgba(124,92,255,.12), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .btnPrimary:hover{
+      border-color: rgba(124,92,255,.70);
+      background: linear-gradient(180deg, rgba(124,92,255,.28), rgba(124,92,255,.12));
+    }
+    .btnGood{
+      border-color: rgba(52,211,153,.50);
+      background: linear-gradient(180deg, rgba(52,211,153,.20), rgba(52,211,153,.08));
+    }
+    .btnWarn{
+      border-color: rgba(251,191,36,.55);
+      background: linear-gradient(180deg, rgba(251,191,36,.18), rgba(251,191,36,.07));
     }
 
-    .verseBox{
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.10);
+    .kbd{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: rgba(234,240,255,.78);
+    }
+
+    /* Main Layout */
+    .main{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1.35fr .95fr;
+      gap:14px;
+      overflow:hidden;
+    }
+
+    .panel{
+      height:100%;
+      border-radius: var(--r20);
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel:before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(700px 280px at 25% 0%, rgba(124,92,255,.16), transparent 60%),
+        radial-gradient(700px 280px at 80% 0%, rgba(77,214,255,.12), transparent 60%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .panel > *{ position:relative; z-index:1; }
+
+    /* Main content panel */
+    .panelHeader{
+      padding:16px 16px 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .titleBlock h2{
+      margin:0;
+      font-size:24px;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .subtitle{
+      margin:10px 0 0 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .gridCards{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+
+    .card{
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--r16);
+      padding:14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
       position:relative;
       overflow:hidden;
     }
-    .verseBox::before{
+    .card:before{
       content:"";
       position:absolute;
-      inset:-2px;
-      background: radial-gradient(500px 200px at 20% 0%, rgba(124,92,255,.22), transparent 60%);
+      inset:-1px;
+      background:
+        radial-gradient(520px 130px at 20% 0%, rgba(124,92,255,.10), transparent 55%),
+        radial-gradient(520px 130px at 80% 0%, rgba(77,214,255,.08), transparent 55%);
+      opacity:.65;
       pointer-events:none;
     }
-    .verseLabel{
-      color: var(--muted2);
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: .14em;
-      font-size: 11px;
-      margin-bottom: 8px;
-    }
-    .verseText{
-      margin:0;
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 1.45;
-    }
-    .verseRef{
-      margin-top: 10px;
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 13px;
-    }
+    .card > *{ position:relative; z-index:1; }
 
-    .section{
-      margin-top: 14px;
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      overflow:hidden;
-    }
-    .sectionHead{
+    .cardHead{
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .sectionHead h3{
-      margin:0;
-      font-size: 13px;
-      letter-spacing:.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 900;
-    }
-    .sectionBody{
-      padding: 12px 14px 14px;
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    .mini{
-      color: var(--muted2);
-      font-size: 12px;
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
+      margin-bottom:10px;
       flex-wrap:wrap;
-      margin-top: 14px;
     }
-    .actions button{ width:auto; padding: 10px 12px; }
+    .label{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color: rgba(234,240,255,.60);
+    }
+    .hint{
+      font-size:12px;
+      color: rgba(234,240,255,.60);
+    }
 
-    /* Sidebar list */
-    .side{
-      padding: 8px;
-      border-radius: var(--radius2);
+    .contentText{
+      font-size:15px;
+      line-height:1.55;
+      color: rgba(234,240,255,.92);
+      white-space:pre-wrap;
     }
-    .listTop{
+
+    .footerTip{
+      padding: 0 16px 16px 16px;
+      color: rgba(234,240,255,.55);
+      font-size:12px;
+    }
+
+    /* Sidebar */
+    .sideTop{
+      padding:16px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      padding: 10px 10px 8px;
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing:.08em;
-      text-transform: uppercase;
+      align-items:center;
+      gap:12px;
     }
-    .list{
+    .sideTop h3{
       margin:0;
-      padding:0;
-      list-style:none;
-      max-height: 610px;
-      overflow:auto;
-      border-radius: 18px;
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color: rgba(234,240,255,.72);
     }
-    .item{
+
+    .sideList{
+      height: calc(100% - 62px);
+      overflow:auto;
+      padding: 10px;
+    }
+    .sideList::-webkit-scrollbar{ width: 10px; }
+    .sideList::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.10);
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,0);
+      background-clip: padding-box;
+    }
+
+    .dayItem{
+      padding:12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      margin-bottom:10px;
+      cursor:pointer;
+      transition: transform .06s ease, background .15s ease, border .15s ease;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+    .dayItem:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.14);
+      transform: translateY(-1px);
+    }
+    .dayItem.active{
+      border-color: rgba(124,92,255,.50);
+      background: linear-gradient(180deg, rgba(124,92,255,.14), rgba(255,255,255,.04));
+      box-shadow: 0 12px 26px rgba(124,92,255,.10);
+    }
+
+    .dayLeft{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .dayTitleRow{
       display:flex;
       gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-      padding: 12px 12px;
-      border-top: 1px solid rgba(255,255,255,.08);
-      cursor:pointer;
-      transition: background .12s ease, transform .08s ease;
+      align-items:baseline;
+      flex-wrap:wrap;
     }
-    .item:hover{ background: rgba(255,255,255,.03); }
-    .item:active{ transform: translateY(1px); }
-    .item:first-child{ border-top:none; }
-
-    .itemLeft{ min-width:0; }
-    .itemDay{ font-weight: 900; }
-    .itemRef{
-      color: var(--muted2);
-      font-size: 12px;
-      margin-top: 2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 230px;
+    .dayTitleRow strong{
+      font-size:14px;
     }
-    .pillTopic{
-      white-space:nowrap;
-      font-size: 11px;
-      font-weight: 900;
-      padding: 5px 8px;
+    .refSmall{
+      font-size:12px;
+      color: rgba(234,240,255,.66);
+    }
+    .topicPill{
+      font-size:11px;
+      padding:6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(124,92,255,.25);
-      background: rgba(124,92,255,.12);
-      color: rgba(234,240,255,.92);
-    }
-    .selected{
-      background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(41,211,255,.10));
-      border-left: 3px solid rgba(124,92,255,.75);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(234,240,255,.78);
+      white-space:nowrap;
     }
 
-    .foot{
-      margin-top: 12px;
-      padding: 12px 16px;
-      color: var(--muted2);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .error{
-      margin-top: 12px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(239,68,68,.30);
-      background: rgba(239,68,68,.12);
-      color: #fecaca;
-      white-space: pre-wrap;
-      display:none;
+    /* Responsive */
+    @media (max-width: 1050px){
+      body{ overflow:auto; }
+      .app{ height:auto; }
+      .main{ grid-template-columns: 1fr; height:auto; }
+      .panel{ height:auto; }
+      .sideList{ height:auto; max-height: 420px; }
+      .meta{ align-items:flex-start; min-width:auto; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-
-    <div class="topbar">
+  <div class="app">
+    <header class="topbar">
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
-        <div style="min-width:0">
+        <div>
           <h1>Daily Scripture Challenge</h1>
-          <p>A tiny daily practice: Scripture → Action → Reflection.</p>
+          <p>A tiny daily practice: <strong>Scripture</strong> + <strong>Action</strong> + <strong>Reflection</strong>.</p>
         </div>
       </div>
 
-      <div class="pillrow">
-        <div class="pill"><span class="dot"></span><span id="todayLabel">—</span></div>
-        <div class="pill"><span style="opacity:.8">Day</span> <span id="dayPill" style="color:var(--text);font-weight:900">—</span></div>
-      </div>
-    </div>
+      <div class="controls" aria-label="Controls">
+        <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
+        <select id="topicSelect" title="Filter by topic"></select>
 
-    <section class="panel">
-      <div class="controls">
-        <input id="search" type="text" placeholder="Search reference, topic, challenge, reflection…" />
-        <select id="topicFilter"><option value="">All topics</option></select>
-        <select id="dayJump"><option value="">Jump to day…</option></select>
+        <button id="prevBtn" class="btn" type="button">◀ Prev <span class="kbd">←</span></button>
+        <button id="nextBtn" class="btn" type="button">Next ▶ <span class="kbd">→</span></button>
+        <button id="randomBtn" class="btn btnPrimary" type="button">🎲 Random</button>
 
-        <button id="prevBtn" class="btn" title="Previous">◀ Prev</button>
-        <button id="nextBtn" class="btn" title="Next">Next ▶</button>
-        <button id="randomBtn" class="btn-primary" title="Random day">🎲 Random</button>
+        <input id="jumpInput" class="input" style="min-width:120px; width:120px;" inputmode="numeric" pattern="[0-9]*" placeholder="Day #" />
+        <button id="jumpBtn" class="btn" type="button">Go</button>
+
+        <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
+        <button id="clearBtn" class="btn btnWarn" type="button">Clear</button>
       </div>
 
-      <div class="subbar">
-        <div class="left">
-          <span class="chip">Showing <strong id="countShown">0</strong>/<strong id="countTotal">0</strong></span>
-          <span class="chip">Selected <strong id="selectedLabel">—</strong></span>
+      <div class="meta">
+        <div class="metaRow">
+          <span id="dateLabel"></span>
+          <span class="pill"><strong id="dayPill">Day —</strong></span>
         </div>
-        <div class="right">
-          <div class="progress" title="Progress through the year"><div class="bar" id="progressBar"></div></div>
-          <button id="todayBtn" class="btn-good" style="width:auto">📅 Today</button>
-          <button id="clearBtn" class="btn" style="width:auto">Clear</button>
+        <div class="metaRow">
+          <span class="pill">Showing <strong id="countLabel">0</strong></span>
+          <span class="pill">Selected <strong id="selectedLabel">—</strong></span>
         </div>
       </div>
-    </section>
+    </header>
 
-    <div class="grid">
-      <!-- DETAIL -->
-      <section class="panel detail" aria-live="polite">
-        <div class="dateRow">
-          <div class="titleRow">
-            <h2 id="dayTitle">Pick a day</h2>
-            <div class="meta" id="metaRow"></div>
+    <main class="main">
+      <!-- Main (Selected Day) -->
+      <section class="panel" aria-label="Selected Day">
+        <div class="panelHeader">
+          <div>
+            <div class="titleBlock">
+              <h2 id="dayTitle">Loading…</h2>
+              <div class="subtitle">
+                <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
+                <span class="pill">Reference: <strong id="refLabel">—</strong></span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+            <button id="copyBtn" class="btn" type="button">📋 Copy</button>
+            <button id="shareBtn" class="btn" type="button">🔗 Share link</button>
           </div>
         </div>
 
-        <div class="verseBox">
-          <div class="verseLabel">Scripture</div>
-          <p class="verseText" id="verseText">Select a day to see the verse.</p>
-          <div class="verseRef" id="verseRef">—</div>
+        <div class="gridCards">
+          <article class="card">
+            <div class="cardHead">
+              <div class="label">Scripture (KJV)</div>
+              <div class="hint" id="verseStatus">Auto-loaded from API</div>
+            </div>
+            <div id="verseText" class="contentText">Select a day to see the verse.</div>
+          </article>
+
+          <article class="card">
+            <div class="cardHead">
+              <div class="label">Today's Challenge</div>
+              <div class="hint">Suggested time: 10 minutes</div>
+            </div>
+            <div id="challengeText" class="contentText">—</div>
+          </article>
+
+          <article class="card">
+            <div class="cardHead">
+              <div class="label">Reflection</div>
+              <div class="hint">Answer in one honest line.</div>
+            </div>
+            <div id="reflectionText" class="contentText">—</div>
+          </article>
         </div>
 
-        <div class="section">
-          <div class="sectionHead">
-            <h3>Today’s Challenge</h3>
-            <span class="mini" id="timeHint">Suggested time: 10 minutes</span>
-          </div>
-          <div class="sectionBody" id="challengeText">—</div>
-        </div>
-
-        <div class="section">
-          <div class="sectionHead">
-            <h3>Reflection</h3>
-            <span class="mini">Answer in one honest line.</span>
-          </div>
-          <div class="sectionBody" id="reflectionText">—</div>
-        </div>
-
-        <div class="actions">
-          <button id="copyBtn" class="btn" title="Copy today’s challenge">📋 Copy</button>
-          <button id="shareBtn" class="btn" title="Copy a shareable link">🔗 Share link</button>
-        </div>
-
-        <div id="err" class="error"></div>
+        <div class="footerTip" id="footerTip"></div>
       </section>
 
-      <!-- SIDEBAR -->
-      <aside class="panel side">
-        <div class="listTop">
-          <span>Days</span>
-          <span style="color:var(--muted2); font-weight:800; letter-spacing:0; text-transform:none;">Click to open</span>
+      <!-- Sidebar (Days) -->
+      <aside class="panel" aria-label="Days List">
+        <div class="sideTop">
+          <h3>Days</h3>
+          <div class="pill" style="cursor:default;">Click to open</div>
         </div>
-        <ul class="list" id="dayList"></ul>
-        <div class="foot">
-          Tip: If verse text fails to load, the reference still works—look it up in your preferred Bible.
-        </div>
+        <div class="sideList" id="daysList"></div>
       </aside>
-    </div>
-
+    </main>
   </div>
 
   <script>
-    // ---------------------------
-    // CONFIG
-    // ---------------------------
-    const PLAN_JS_GLOBAL = "PLAN";      // plan.js sets window.PLAN = [...]
-    const PLAN_JSON_FILE = "plan.json"; // or plan.json in same folder
-    const LOCAL_KEY = "plan365:lastDay";
+  (() => {
+    'use strict';
 
-    // Optional: If you have verse text fetch in your current site, you can hook it here.
-    // For now we show the reference and (optionally) a placeholder verse line.
-    const VERSE_PLACEHOLDER = "“(Verse text can be loaded by API or looked up by reference.)”";
+    // ========= CONFIG =========
+    const PLAN_URL = 'plan.json';
+    const STORAGE_KEY = 'ovt_lastDay';
 
-    // ---------------------------
-    // STATE
-    // ---------------------------
-    let allDays = [];
+    const VERSE_API_BASE = 'https://bible-api.com/';
+    const VERSE_TRANSLATION = 'kjv';
+    const VERSE_TIMEOUT_MS = 12000;
+    const VERSE_CACHE_PREFIX = 'ovt_kjv_';
+
+    // ========= STATE =========
+    let plan = [];
     let filtered = [];
-    let selected = null;
+    let selectedDay = null;   // 1..365
+    let selectedIndex = -1;
+    let lastVerseRef = null;
 
-    // ---------------------------
-    // HELPERS
-    // ---------------------------
+    // ========= ELEMENTS =========
     const $ = (id) => document.getElementById(id);
-    const safe = (v) => (v ?? "").toString();
+    const el = {
+      searchInput: $('searchInput'),
+      topicSelect: $('topicSelect'),
+      prevBtn: $('prevBtn'),
+      nextBtn: $('nextBtn'),
+      randomBtn: $('randomBtn'),
+      jumpInput: $('jumpInput'),
+      jumpBtn: $('jumpBtn'),
+      todayBtn: $('todayBtn'),
+      clearBtn: $('clearBtn'),
 
-    function escapeHtml(str){
-      return safe(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+      dateLabel: $('dateLabel'),
+      dayPill: $('dayPill'),
+      countLabel: $('countLabel'),
+      selectedLabel: $('selectedLabel'),
+
+      dayTitle: $('dayTitle'),
+      topicLabel: $('topicLabel'),
+      refLabel: $('refLabel'),
+
+      verseText: $('verseText'),
+      verseStatus: $('verseStatus'),
+      challengeText: $('challengeText'),
+      reflectionText: $('reflectionText'),
+      footerTip: $('footerTip'),
+
+      copyBtn: $('copyBtn'),
+      shareBtn: $('shareBtn'),
+
+      daysList: $('daysList'),
+    };
+
+    // ========= HELPERS =========
+    const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
+    const safe = (v) => (v == null ? '' : String(v)).trim();
+    const norm = (s) => safe(s).toLowerCase();
+
+    function isLeapYear(y){
+      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
     }
-
-    function normalize(s){ return safe(s).toLowerCase().trim(); }
-
-    function fmtDate(d){
-      return d.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+    function dayOfYear(d){
+      const start = new Date(d.getFullYear(), 0, 1);
+      const oneDay = 24 * 60 * 60 * 1000;
+      return Math.floor((d - start) / oneDay) + 1;
     }
-
-    function dayOfYear(){
+    function todayPlanDay(){
+      // Map 366 -> 365 on leap years so your plan stays 1..365
       const now = new Date();
-      const start = new Date(now.getFullYear(), 0, 1);
-      const n = Math.floor((now - start) / 86400000) + 1; // 1..366
-      return Math.min(365, Math.max(1, n));
+      const doy = dayOfYear(now);
+      if (isLeapYear(now.getFullYear()) && doy === 366) return 365;
+      return clamp(doy, 1, 365);
+    }
+    function formatDate(d){
+      return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
     }
 
-    function setProgress(dayNum){
-      const pct = Math.round((dayNum / 365) * 100);
-      $("progressBar").style.width = pct + "%";
+    function getURLDay(){
+      const url = new URL(location.href);
+      const qs = url.searchParams.get('day');
+      if (qs) {
+        const n = parseInt(qs, 10);
+        if (Number.isFinite(n)) return clamp(n, 1, 365);
+      }
+      // also support hash day=##
+      const m = location.hash.match(/day=(\d{1,3})/i);
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (Number.isFinite(n)) return clamp(n, 1, 365);
+      }
+      return null;
     }
 
-    function uniqueTopics(days){
+    function setURLDay(day){
+      const url = new URL(location.href);
+      url.searchParams.set('day', String(day));
+      history.replaceState(null, '', url.toString());
+    }
+
+    function saveLastDay(day){
+      try { localStorage.setItem(STORAGE_KEY, String(day)); } catch {}
+    }
+    function loadLastDay(){
+      try {
+        const v = localStorage.getItem(STORAGE_KEY);
+        const n = parseInt(v, 10);
+        if (Number.isFinite(n)) return clamp(n, 1, 365);
+      } catch {}
+      return null;
+    }
+
+    function uniqueTopics(items){
       const set = new Set();
-      days.forEach(d => set.add(safe(d.topic)));
-      return [...set].filter(Boolean).sort((a,b)=>a.localeCompare(b));
+      for (const it of items) set.add(safe(it.topic) || 'General');
+      return Array.from(set).sort((a,b)=>a.localeCompare(b));
     }
 
-    function renderTopicOptions(){
-      const topics = uniqueTopics(allDays);
-      $("topicFilter").innerHTML =
-        `<option value="">All topics</option>` +
-        topics.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+    function setVerseStatus(msg, type='info'){
+      el.verseStatus.textContent = msg;
+      el.verseStatus.style.color =
+        type === 'good' ? 'rgba(52,211,153,.92)'
+      : type === 'warn' ? 'rgba(251,191,36,.92)'
+      : type === 'bad'  ? 'rgba(251,113,133,.96)'
+      : 'rgba(234,240,255,.60)';
     }
 
-    function renderJump(){
-      $("dayJump").innerHTML =
-        `<option value="">Jump to day…</option>` +
-        allDays.map(d => `<option value="${d.day}">Day ${d.day} — ${escapeHtml(d.topic||"")}</option>`).join("");
+    async function copyToClipboard(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch {}
+        ta.remove();
+        return true;
+      }
     }
 
+    // ========= VERSE CACHE + FETCH =========
+    function cacheGet(ref){
+      try { return localStorage.getItem(VERSE_CACHE_PREFIX + ref); } catch { return null; }
+    }
+    function cacheSet(ref, text){
+      try { localStorage.setItem(VERSE_CACHE_PREFIX + ref, text); } catch {}
+    }
+
+    async function fetchWithTimeout(url){
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), VERSE_TIMEOUT_MS);
+      try{
+        return await fetch(url, { signal: controller.signal });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function loadVerseKJV(reference){
+      const ref = safe(reference);
+      if (!ref) return null;
+
+      const cached = cacheGet(ref);
+      if (cached) return cached;
+
+      const url = `${VERSE_API_BASE}${encodeURIComponent(ref)}?translation=${encodeURIComponent(VERSE_TRANSLATION)}`;
+      const res = await fetchWithTimeout(url);
+
+      if (!res.ok) throw new Error(`Verse API HTTP ${res.status}`);
+      const data = await res.json();
+      const text = safe(data && data.text);
+      if (!text) throw new Error('Verse API returned empty text');
+
+      cacheSet(ref, text);
+      return text;
+    }
+
+    // ========= FILTERING =========
     function applyFilters(){
-      const q = normalize($("search").value);
-      const topic = $("topicFilter").value;
+      const q = norm(el.searchInput.value);
+      const topic = el.topicSelect.value;
 
-      filtered = allDays.filter(d => {
-        if (topic && safe(d.topic) !== topic) return false;
+      filtered = plan.filter(item => {
+        const t = safe(item.topic) || 'General';
+        if (topic && topic !== 'ALL' && t !== topic) return false;
+
         if (!q) return true;
-        const hay = normalize([d.day, d.reference, d.topic, d.challenge, d.reflection].join(" | "));
+        const hay = norm(
+          `${item.day} ${item.reference} ${item.topic} ${item.challenge} ${item.reflection}`
+        );
         return hay.includes(q);
       });
 
-      $("countShown").textContent = filtered.length;
-      renderList();
+      el.countLabel.textContent = `${filtered.length}/${plan.length}`;
+      renderSidebar();
 
-      // if selected disappears due to filter, pick first in filtered
-      if (selected && !filtered.some(x => x.day === selected.day) && filtered.length){
-        selectDay(filtered[0].day, false);
+      // Keep selected day stable if possible
+      if (selectedDay != null) {
+        const idx = filtered.findIndex(x => x.day === selectedDay);
+        if (idx >= 0) {
+          selectedIndex = idx;
+          highlightSidebar();
+          return;
+        }
+      }
+
+      // Otherwise pick first filtered item
+      if (filtered.length) selectDay(filtered[0].day, { fromFilter:true });
+      else {
+        selectedDay = null;
+        selectedIndex = -1;
+        renderEmptyState();
       }
     }
 
-    function renderList(){
-      const pool = filtered.length ? filtered : allDays;
-      const ul = $("dayList");
-      ul.innerHTML = pool.map(d => {
-        const isSel = selected && selected.day === d.day;
-        return `
-          <li class="item ${isSel ? "selected" : ""}" data-day="${d.day}">
-            <div class="itemLeft">
-              <div class="itemDay">Day ${d.day}</div>
-              <div class="itemRef">${escapeHtml(d.reference || "")}</div>
-            </div>
-            <div class="pillTopic">${escapeHtml(d.topic || "")}</div>
-          </li>
-        `;
-      }).join("");
+    // ========= RENDER =========
+    function renderEmptyState(){
+      el.dayTitle.textContent = 'No results';
+      el.topicLabel.textContent = '—';
+      el.refLabel.textContent = '—';
+      el.verseText.textContent = 'Try clearing search or switching topics.';
+      setVerseStatus('No verse to load', 'warn');
+      el.challengeText.textContent = '—';
+      el.reflectionText.textContent = '—';
+      el.dayPill.textContent = 'Day —';
+      el.selectedLabel.textContent = '—';
+      el.footerTip.textContent = '';
+    }
 
-      ul.querySelectorAll(".item").forEach(li => {
-        li.addEventListener("click", () => {
-          const dayNum = parseInt(li.getAttribute("data-day"), 10);
-          selectDay(dayNum, true);
-        });
+    function renderSidebar(){
+      el.daysList.innerHTML = '';
+
+      const frag = document.createDocumentFragment();
+      for (const item of filtered) {
+        const div = document.createElement('div');
+        div.className = 'dayItem';
+        div.dataset.day = String(item.day);
+
+        const left = document.createElement('div');
+        left.className = 'dayLeft';
+
+        const row = document.createElement('div');
+        row.className = 'dayTitleRow';
+
+        const strong = document.createElement('strong');
+        strong.textContent = `Day ${item.day}`;
+
+        const ref = document.createElement('span');
+        ref.className = 'refSmall';
+        ref.textContent = safe(item.reference);
+
+        row.appendChild(strong);
+        row.appendChild(ref);
+
+        left.appendChild(row);
+
+        const right = document.createElement('span');
+        right.className = 'topicPill';
+        right.textContent = safe(item.topic) || 'General';
+
+        div.appendChild(left);
+        div.appendChild(right);
+
+        div.addEventListener('click', () => selectDay(item.day));
+        frag.appendChild(div);
+      }
+
+      el.daysList.appendChild(frag);
+      highlightSidebar();
+    }
+
+    function highlightSidebar(){
+      const items = el.daysList.querySelectorAll('.dayItem');
+      items.forEach(node => {
+        const d = parseInt(node.dataset.day, 10);
+        node.classList.toggle('active', d === selectedDay);
       });
+      el.selectedLabel.textContent = selectedDay ? `Day ${selectedDay}` : '—';
     }
 
-    function setMeta(d){
-      $("metaRow").innerHTML = `
-        <span class="badge">Topic: <strong>${escapeHtml(d.topic || "")}</strong></span>
-        <span class="badge">Reference: <strong>${escapeHtml(d.reference || "")}</strong></span>
-      `;
-    }
+    async function renderSelected(){
+      if (selectedDay == null) return;
 
-    function setDetails(d){
-      selected = d;
+      const item = plan.find(x => x.day === selectedDay);
+      if (!item) return;
 
-      $("dayTitle").textContent = `Day ${d.day}`;
-      $("selectedLabel").textContent = `Day ${d.day}`;
-      $("dayPill").textContent = d.day;
+      el.dayTitle.textContent = `Day ${item.day}`;
+      el.topicLabel.textContent = safe(item.topic) || 'General';
+      el.refLabel.textContent = safe(item.reference) || '—';
+      el.challengeText.textContent = safe(item.challenge) || '—';
+      el.reflectionText.textContent = safe(item.reflection) || '—';
 
-      setMeta(d);
-      setProgress(d.day);
+      el.dayPill.textContent = `Day ${item.day}`;
 
-      // Verse (you can replace this with your existing verse fetch if you already have it)
-      $("verseText").textContent = VERSE_PLACEHOLDER;
-      $("verseRef").textContent = safe(d.reference || "");
+      // Footer tip
+      el.footerTip.textContent = 'Tip: If verse text fails to load, the reference still works—look it up in your preferred Bible.';
 
-      $("challengeText").textContent = safe(d.challenge || "");
-      $("reflectionText").textContent = safe(d.reflection || "");
-
-      // save
-      try { localStorage.setItem(LOCAL_KEY, String(d.day)); } catch {}
-      $("dayJump").value = String(d.day);
-
-      renderList();
-    }
-
-    function selectDay(dayNum, scrollIntoView){
-      const d = allDays.find(x => x.day === dayNum);
-      if (!d) return;
-      setDetails(d);
-
-      if (scrollIntoView){
-        const li = document.querySelector(`.item[data-day="${dayNum}"]`);
-        if (li) li.scrollIntoView({block:"center", behavior:"smooth"});
+      // Verse loading
+      const ref = safe(item.reference);
+      if (!ref) {
+        el.verseText.textContent = 'No reference found for this day.';
+        setVerseStatus('Missing reference', 'warn');
+        return;
       }
+      if (ref === lastVerseRef) return; // avoid redundant work
+      lastVerseRef = ref;
 
-      // update URL hash for sharing
-      history.replaceState(null, "", `#day=${dayNum}`);
+      el.verseText.textContent = 'Loading verse…';
+      setVerseStatus('Loading from API…', 'info');
+
+      try{
+        const verse = await loadVerseKJV(ref);
+        el.verseText.textContent = `${verse}\n\n— ${ref} (KJV)`;
+        setVerseStatus('Loaded', 'good');
+      } catch (err){
+        // Show a helpful message (likely CSP or network)
+        const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+        el.verseText.textContent =
+          `Verse text couldn’t load for “${ref}”.\n\n` +
+          `Reference still works—look it up in your preferred Bible.\n\n` +
+          `Debug: ${msg}\n\n` +
+          `If you have a strict Content-Security-Policy, allow:\nconnect-src 'self' https://bible-api.com`;
+        setVerseStatus('Could not load', 'bad');
+      }
     }
 
-    function move(delta){
-      const pool = filtered.length ? filtered : allDays;
-      if (!pool.length) return;
-      if (!selected) return selectDay(pool[0].day, true);
+    // ========= SELECTION / NAV =========
+    function selectDay(day, opts={}){
+      const d = clamp(parseInt(day, 10), 1, 365);
+      selectedDay = d;
 
-      const idx = pool.findIndex(x => x.day === selected.day);
-      const nextIdx = Math.min(pool.length-1, Math.max(0, idx + delta));
-      selectDay(pool[nextIdx].day, true);
+      // Update selectedIndex within filtered
+      selectedIndex = filtered.findIndex(x => x.day === selectedDay);
+
+      saveLastDay(selectedDay);
+      setURLDay(selectedDay);
+
+      highlightSidebar();
+      renderSelected();
+
+      // If it’s in the list, keep it visible
+      const active = el.daysList.querySelector(`.dayItem[data-day="${selectedDay}"]`);
+      if (active) active.scrollIntoView({ block:'nearest' });
     }
 
-    function pickRandom(){
-      const pool = filtered.length ? filtered : allDays;
-      if (!pool.length) return;
-      const d = pool[Math.floor(Math.random() * pool.length)];
-      selectDay(d.day, true);
+    function prev(){
+      if (!filtered.length) return;
+      if (selectedIndex < 0) selectedIndex = 0;
+      selectedIndex = clamp(selectedIndex - 1, 0, filtered.length - 1);
+      selectDay(filtered[selectedIndex].day);
     }
 
-    function selectToday(){
-      selectDay(dayOfYear(), true);
+    function next(){
+      if (!filtered.length) return;
+      if (selectedIndex < 0) selectedIndex = 0;
+      selectedIndex = clamp(selectedIndex + 1, 0, filtered.length - 1);
+      selectDay(filtered[selectedIndex].day);
+    }
+
+    function random(){
+      if (!filtered.length) return;
+      const idx = Math.floor(Math.random() * filtered.length);
+      selectDay(filtered[idx].day);
+    }
+
+    function jump(){
+      const v = parseInt(el.jumpInput.value, 10);
+      if (!Number.isFinite(v)) return;
+      selectDay(clamp(v, 1, 365));
+      el.jumpInput.value = '';
     }
 
     function clearFilters(){
-      $("search").value = "";
-      $("topicFilter").value = "";
+      el.searchInput.value = '';
+      el.topicSelect.value = 'ALL';
       applyFilters();
     }
 
-    function showError(msg){
-      $("err").style.display = "block";
-      $("err").textContent = msg;
-    }
-
-    // ---------------------------
-    // COPY / SHARE
-    // ---------------------------
-    async function copyText(txt){
-      try{
-        await navigator.clipboard.writeText(txt);
-      }catch{
-        // fallback
-        const ta = document.createElement("textarea");
-        ta.value = txt;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-      }
-    }
-
-    // ---------------------------
-    // LOAD PLAN
-    // ---------------------------
+    // ========= INIT =========
     async function loadPlan(){
-      if (window[PLAN_JS_GLOBAL] && Array.isArray(window[PLAN_JS_GLOBAL])) {
-        return window[PLAN_JS_GLOBAL];
-      }
-      const res = await fetch(PLAN_JSON_FILE, { cache: "no-store" });
-      if (!res.ok) throw new Error(`Could not fetch ${PLAN_JSON_FILE} (HTTP ${res.status}).`);
+      const res = await fetch(PLAN_URL, { cache:'no-store' });
+      if (!res.ok) throw new Error(`Failed to load plan.json (HTTP ${res.status})`);
       const data = await res.json();
-      if (!Array.isArray(data)) throw new Error(`${PLAN_JSON_FILE} is not an array.`);
-      return data;
-    }
 
-    function getHashDay(){
-      const m = location.hash.match(/day=(\d+)/);
-      if (!m) return null;
-      const n = parseInt(m[1], 10);
-      if (!Number.isFinite(n)) return null;
-      return Math.min(365, Math.max(1, n));
-    }
+      // Basic validation + normalization
+      plan = Array.isArray(data) ? data : [];
+      plan = plan
+        .filter(x => x && Number.isFinite(parseInt(x.day,10)))
+        .map(x => ({
+          day: clamp(parseInt(x.day,10), 1, 365),
+          reference: safe(x.reference),
+          topic: safe(x.topic) || 'General',
+          challenge: safe(x.challenge),
+          reflection: safe(x.reflection),
+        }))
+        .sort((a,b)=>a.day-b.day);
 
-    (async function boot(){
-      $("todayLabel").textContent = fmtDate(new Date());
+      // Topic dropdown
+      const topics = uniqueTopics(plan);
+      el.topicSelect.innerHTML = '';
+      const optAll = document.createElement('option');
+      optAll.value = 'ALL';
+      optAll.textContent = 'All topics';
+      el.topicSelect.appendChild(optAll);
 
-      try{
-        const data = await loadPlan();
-        allDays = data
-          .map(d => ({
-            day: Number(d.day),
-            reference: d.reference,
-            topic: d.topic,
-            challenge: d.challenge,
-            reflection: d.reflection
-          }))
-          .filter(d => Number.isFinite(d.day))
-          .sort((a,b)=>a.day-b.day);
-
-        $("countTotal").textContent = allDays.length;
-
-        renderTopicOptions();
-        renderJump();
-
-        applyFilters();
-        renderList();
-
-        // events
-        $("search").addEventListener("input", applyFilters);
-        $("topicFilter").addEventListener("change", applyFilters);
-        $("dayJump").addEventListener("change", () => {
-          const val = parseInt($("dayJump").value, 10);
-          if (val) selectDay(val, true);
-        });
-
-        $("prevBtn").addEventListener("click", () => move(-1));
-        $("nextBtn").addEventListener("click", () => move(1));
-        $("randomBtn").addEventListener("click", pickRandom);
-        $("todayBtn").addEventListener("click", selectToday);
-        $("clearBtn").addEventListener("click", clearFilters);
-
-        $("copyBtn").addEventListener("click", async () => {
-          if (!selected) return;
-          const txt =
-            `Day ${selected.day}\n` +
-            `Reference: ${safe(selected.reference)}\n` +
-            `Topic: ${safe(selected.topic)}\n\n` +
-            `Challenge:\n${safe(selected.challenge)}\n\n` +
-            `Reflection:\n${safe(selected.reflection)}`;
-          await copyText(txt);
-        });
-
-        $("shareBtn").addEventListener("click", async () => {
-          if (!selected) return;
-          const url = location.origin + location.pathname + `#day=${selected.day}`;
-          await copyText(url);
-        });
-
-        // keyboard nav
-        window.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowLeft") move(-1);
-          if (e.key === "ArrowRight") move(1);
-          if (e.key === "/" && document.activeElement !== $("search")) {
-            e.preventDefault(); $("search").focus();
-          }
-        });
-
-        // restore selection priority:
-        // 1) URL hash #day=...
-        // 2) last saved
-        // 3) today's day-of-year
-        const hashDay = getHashDay();
-        if (hashDay) return selectDay(hashDay, true);
-
-        let last = null;
-        try { last = parseInt(localStorage.getItem(LOCAL_KEY), 10); } catch {}
-        if (last && allDays.some(d => d.day === last)) return selectDay(last, false);
-
-        selectToday();
-
-      } catch(e){
-        showError(
-          (e && e.message ? e.message : String(e)) +
-          "\n\nFix options:\n" +
-          "• If you use plan.js: ensure it sets window.PLAN = [...] and include it (see note below)\n" +
-          "• If you use plan.json: ensure plan.json exists next to index.html"
-        );
+      for (const t of topics){
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        el.topicSelect.appendChild(opt);
       }
-    })();
+
+      // Date label
+      el.dateLabel.textContent = formatDate(new Date());
+
+      // Initial filtered set
+      filtered = plan.slice();
+      el.countLabel.textContent = `${filtered.length}/${plan.length}`;
+      renderSidebar();
+
+      // Pick initial day
+      const urlDay = getURLDay();
+      const last = loadLastDay();
+      const initial = urlDay || last || todayPlanDay();
+      selectDay(initial);
+    }
+
+    // ========= EVENTS =========
+    el.searchInput.addEventListener('input', () => applyFilters());
+    el.topicSelect.addEventListener('change', () => applyFilters());
+
+    el.prevBtn.addEventListener('click', prev);
+    el.nextBtn.addEventListener('click', next);
+    el.randomBtn.addEventListener('click', random);
+    el.jumpBtn.addEventListener('click', jump);
+    el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
+    el.clearBtn.addEventListener('click', clearFilters);
+
+    el.jumpInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') jump();
+    });
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.isContentEditable)) return;
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+      if (e.key.toLowerCase() === 'r') random();
+      if (e.key.toLowerCase() === 't') selectDay(todayPlanDay());
+    });
+
+    // Copy actions
+    el.copyBtn.addEventListener('click', async () => {
+      if (selectedDay == null) return;
+      const item = plan.find(x => x.day === selectedDay);
+      if (!item) return;
+
+      const text =
+        `Day ${item.day}\n` +
+        `Topic: ${item.topic}\n` +
+        `Reference: ${item.reference}\n\n` +
+        `${safe(el.verseText.textContent)}\n\n` +
+        `Challenge: ${item.challenge}\n\n` +
+        `Reflection: ${item.reflection}\n`;
+
+      await copyToClipboard(text);
+      setVerseStatus('Copied to clipboard', 'good');
+      setTimeout(() => setVerseStatus('Auto-loaded from API', 'info'), 1200);
+    });
+
+    el.shareBtn.addEventListener('click', async () => {
+      if (selectedDay == null) return;
+      const url = new URL(location.href);
+      url.searchParams.set('day', String(selectedDay));
+      await copyToClipboard(url.toString());
+      setVerseStatus('Link copied', 'good');
+      setTimeout(() => setVerseStatus('Auto-loaded from API', 'info'), 1200);
+    });
+
+    // ========= BOOT =========
+    loadPlan().catch(err => {
+      console.error(err);
+      el.dayTitle.textContent = 'Error loading plan';
+      el.verseText.textContent = String(err && err.message ? err.message : err);
+      setVerseStatus('Load failed', 'bad');
+      el.footerTip.textContent = 'Make sure plan.json is in the same folder as index.html and is valid JSON.';
+    });
+
+  })();
   </script>
-
-  <!-- IMPORTANT:
-    If your repo uses plan.js (recommended), add this line right before </body>:
-
-    <script src="plan.js"></script>
-
-    And your plan.js must contain: window.PLAN = [ ...365 objects... ];
-  -->
 </body>
 </html>
