@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
   <title>One Verse Today</title>
-  <meta name="description" content="A tiny daily practice: Scripture + Action + Reflection." />
+  <meta name="description" content="Scripture + Action + Reflection — one day at a time." />
 
-  <!-- Premium fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- CSP -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
@@ -21,27 +19,36 @@
     img-src 'self' data:;
     connect-src 'self' https://bible-api.com;
     base-uri 'self';
-    form-action 'self';
     frame-ancestors 'none';
   ">
 
   <style>
     :root{
-      --bg0:#060616; --bg1:#090C20; --bg2:#0B1230;
-      --text:#F4F7FF;
-      --muted: rgba(244,247,255,.74);
-      --sun:#FDBA74; --sky:#60A5FA; --leaf:#22C55E; --violet:#8B5CF6;
-      --shadow: 0 26px 90px rgba(0,0,0,.62);
-      --shadow2: 0 16px 55px rgba(0,0,0,.50);
-      --shadow3: 0 10px 22px rgba(0,0,0,.35);
-      --r28: 28px; --r20: 20px;
+      --bg0:#060712;
+      --bg1:#0A0E24;
+      --paper: rgba(255,255,255,.06);
+      --paper2: rgba(255,255,255,.04);
+      --stroke: rgba(255,255,255,.12);
+
+      --text:#F7F6F2;
+      --muted: rgba(247,246,242,.70);
+
+      --sun:#FDBA74;
+      --rose:#FB7185;
+      --sky:#60A5FA;
+      --leaf:#34D399;
+
+      --r28: 28px;
+      --r22: 22px;
+      --r16: 16px;
+
+      --shadow: 0 30px 90px rgba(0,0,0,.60);
+      --shadow2: 0 14px 40px rgba(0,0,0,.45);
+      --shadow3: 0 10px 22px rgba(0,0,0,.32);
 
       --font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-      --verseSize: 18px;
-      --bodySize: 15px;
+      --verseSize: 19px;
     }
 
     *{ box-sizing:border-box; }
@@ -51,111 +58,124 @@
       font-family: var(--font);
       color: var(--text);
       background:
-        radial-gradient(1200px 800px at 14% 8%, rgba(253,186,116,.22), transparent 60%),
-        radial-gradient(1100px 850px at 86% 12%, rgba(96,165,250,.20), transparent 60%),
-        radial-gradient(1100px 950px at 55% 92%, rgba(34,197,94,.11), transparent 62%),
-        radial-gradient(900px 800px at 50% 45%, rgba(139,92,246,.15), transparent 64%),
-        linear-gradient(180deg, var(--bg0), var(--bg2) 35%, var(--bg1));
-      overflow:auto; /* IMPORTANT: no cropping */
+        radial-gradient(1200px 900px at 18% 12%, rgba(253,186,116,.22), transparent 60%),
+        radial-gradient(1100px 850px at 86% 18%, rgba(96,165,250,.18), transparent 60%),
+        radial-gradient(1200px 900px at 55% 95%, rgba(52,211,153,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:auto;
     }
-
     body:before{
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
-      background: repeating-linear-gradient(
-        115deg,
-        rgba(255,255,255,.030) 0px,
-        rgba(255,255,255,.030) 1px,
-        rgba(255,255,255,0) 7px,
-        rgba(255,255,255,0) 18px
-      );
-      opacity:.14;
+      background:
+        repeating-linear-gradient(0deg,
+          rgba(255,255,255,.024) 0px,
+          rgba(255,255,255,.024) 1px,
+          rgba(255,255,255,0) 10px,
+          rgba(255,255,255,0) 22px
+        );
+      opacity:.10;
       mix-blend-mode: overlay;
     }
 
-    .app{
-      min-height:100%;
-      padding:16px;
+    .wrap{
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 18px 14px 26px 14px;
       display:grid;
-      grid-template-rows:auto 1fr;
       gap:14px;
     }
 
-    .topbar{
+    /* Header: “magazine / devotional” */
+    .mast{
       border-radius: var(--r28);
-      padding:14px;
-      display:flex;
-      gap:14px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      overflow:hidden;
-
       border:1px solid transparent;
       background:
-        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035)) padding-box,
-        linear-gradient(120deg, rgba(253,186,116,.48), rgba(96,165,250,.35), rgba(139,92,246,.35), rgba(34,197,94,.30)) border-box;
-      backdrop-filter: blur(12px);
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035)) padding-box,
+        linear-gradient(120deg, rgba(253,186,116,.52), rgba(251,113,133,.28), rgba(96,165,250,.26), rgba(52,211,153,.22)) border-box;
+      backdrop-filter: blur(14px);
       box-shadow: var(--shadow2);
+      overflow:hidden;
     }
-
-    .brand{ display:flex; align-items:center; gap:12px; min-width:260px; }
-    .logo{
-      width:42px; height:42px; border-radius:16px;
+    .mastTop{
+      padding:18px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .title{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width:280px;
+    }
+    .seal{
+      width:44px; height:44px; border-radius:18px;
       background:
-        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.40), transparent 60%),
-        linear-gradient(135deg, rgba(253,186,116,.95), rgba(96,165,250,.80), rgba(139,92,246,.75));
-      border:1px solid rgba(255,255,255,.20);
-      box-shadow: 0 18px 44px rgba(253,186,116,.12), 0 18px 44px rgba(96,165,250,.10);
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.45), transparent 62%),
+        linear-gradient(135deg, rgba(253,186,116,.95), rgba(251,113,133,.65), rgba(96,165,250,.55));
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow: 0 18px 44px rgba(253,186,116,.10), 0 18px 44px rgba(251,113,133,.08);
       flex:0 0 auto;
     }
-    .brand h1{ margin:0; font-size:14px; letter-spacing:.3px; font-weight:800; }
-    .brand p{ margin:3px 0 0 0; font-size:12px; color: var(--muted); }
-
-    .controls{
-      flex:1 1 auto;
-      min-width: 330px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
+    .title h1{
+      margin:0;
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:4px 0 0 0;
+      color: var(--muted);
+      font-size:12px;
     }
 
     .meta{
-      min-width: 330px;
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:8px;
-    }
-    .metaRow{
       display:flex;
       gap:10px;
-      align-items:center;
-      justify-content:flex-end;
-      font-size:12px;
-      color: var(--muted);
       flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:flex-end;
     }
-
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:8px 10px;
+      padding:9px 12px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      color: rgba(247,246,242,.86);
+      font-size:12px;
       white-space:nowrap;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
     }
-    .pill strong{ color: var(--text); font-weight:800; }
+    .pill strong{ color: rgba(247,246,242,.96); font-weight:900; }
 
+    /* Controls in a “ribbon” */
+    .ribbon{
+      padding: 14px 14px 16px 14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(900px 200px at 16% 0%, rgba(253,186,116,.11), transparent 58%),
+        rgba(0,0,0,.10);
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(14px);
+    }
+    .controls{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr auto auto auto auto;
+      gap:10px;
+      align-items:center;
+    }
     .input, select, textarea{
-      border-radius:14px;
+      border-radius: var(--r16);
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: var(--text);
@@ -163,15 +183,13 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
       font-family: var(--font);
     }
-    .input, select{ height:40px; padding:0 12px; }
-    .input::placeholder{ color: rgba(245,247,255,.42); }
-    select{ cursor:pointer; min-width:180px; }
-    textarea{ width:100%; padding:12px; min-height:110px; resize:vertical; font-size:14px; line-height:1.5; }
-
+    .input, select{ height:42px; padding:0 12px; }
+    .input::placeholder{ color: rgba(247,246,242,.40); }
+    select{ cursor:pointer; }
     .btn{
-      height:40px;
+      height:42px;
       padding:0 12px;
-      border-radius:14px;
+      border-radius: var(--r16);
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: var(--text);
@@ -182,287 +200,322 @@
       user-select:none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06), var(--shadow3);
       transition: transform .08s ease, background .15s ease, border .15s ease, box-shadow .15s ease;
-      font-weight:600;
+      font-weight:800;
+      white-space:nowrap;
     }
     .btn:hover{
       border-color: rgba(255,255,255,.22);
       background: rgba(255,255,255,.085);
       transform: translateY(-1px);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 38px rgba(0,0,0,.42);
     }
-
     .btnPrimary{
       border:1px solid transparent;
       background:
-        linear-gradient(180deg, rgba(96,165,250,.22), rgba(139,92,246,.10)) padding-box,
-        linear-gradient(120deg, rgba(96,165,250,.55), rgba(139,92,246,.45), rgba(253,186,116,.35)) border-box;
+        linear-gradient(180deg, rgba(253,186,116,.20), rgba(251,113,133,.10)) padding-box,
+        linear-gradient(120deg, rgba(253,186,116,.50), rgba(251,113,133,.40), rgba(96,165,250,.22)) border-box;
     }
     .btnGood{
-      border:1px solid rgba(34,197,94,.40);
-      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.08));
-    }
-    .btnSoft{
-      border:1px solid rgba(253,186,116,.36);
-      background: linear-gradient(180deg, rgba(253,186,116,.13), rgba(255,255,255,.05));
+      border:1px solid rgba(52,211,153,.40);
+      background: linear-gradient(180deg, rgba(52,211,153,.22), rgba(52,211,153,.08));
     }
 
-    /* Main layout (desktop) */
+    .row2{
+      margin-top:10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .row2Left,.row2Right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    textarea{ width:100%; padding:12px; min-height:120px; resize:vertical; line-height:1.5; font-size:14px; }
+
+    /* Main layout: left reading column + right “day index” on desktop */
     .main{
       display:grid;
-      grid-template-columns: 1.45fr .85fr;
+      grid-template-columns: 1.35fr .65fr;
       gap:14px;
       align-items:start;
     }
 
     .panel{
       border-radius: var(--r28);
-      overflow:hidden;
-      border:1px solid transparent;
+      border:1px solid rgba(255,255,255,.12);
       background:
-        linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.028)) padding-box,
-        linear-gradient(120deg, rgba(255,255,255,.18), rgba(255,255,255,.04)) border-box;
-      backdrop-filter: blur(12px);
+        radial-gradient(900px 220px at 16% 0%, rgba(253,186,116,.10), transparent 60%),
+        rgba(255,255,255,.04);
       box-shadow: var(--shadow);
+      overflow:hidden;
     }
-
-    .panelHeader{
-      padding:18px 18px 12px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
+    .panelHead{
+      padding:18px 18px 14px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
       flex-wrap:wrap;
     }
-
-    .panelHeader h2{
+    .panelHead h2{
       margin:0;
-      font-size:28px;
-      letter-spacing:-.2px;
-      line-height:1.05;
       font-family: var(--serif);
-      font-weight:600;
+      font-size:34px;
+      font-weight:650;
+      letter-spacing:-.2px;
+      line-height:1.0;
     }
 
-    .subtitle{
-      margin-top:12px;
+    .chips{
+      margin-top:10px;
       display:flex;
-      flex-wrap:wrap;
       gap:10px;
-      color: var(--muted);
+      flex-wrap:wrap;
+    }
+    .chip{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
       font-size:12px;
+      color: rgba(247,246,242,.86);
+    }
+    .chip strong{ color: rgba(247,246,242,.96); }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
-    .gridCards{ padding:16px 18px 18px 18px; display:grid; gap:12px; }
-
+    .cards{
+      padding: 14px 18px 18px 18px;
+      display:grid;
+      gap:12px;
+    }
     .card{
-      border-radius: var(--r20);
+      border-radius: var(--r22);
       padding:16px;
       border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(900px 140px at 10% 0%, rgba(253,186,116,.10), transparent 55%),
-        radial-gradient(900px 140px at 90% 0%, rgba(96,165,250,.09), transparent 55%),
+        radial-gradient(900px 180px at 14% 0%, rgba(253,186,116,.10), transparent 60%),
         rgba(255,255,255,.05);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 30px rgba(0,0,0,.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 30px rgba(0,0,0,.34);
     }
-
     .cardHead{
-      display:flex; justify-content:space-between; align-items:center;
-      gap:10px; flex-wrap:wrap; margin-bottom:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
     }
     .label{
-      font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-      color: rgba(245,247,255,.64); font-weight:700;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(247,246,242,.62);
+      font-weight:900;
     }
-    .hint{ font-size:12px; color: rgba(245,247,255,.62); }
+    .hint{ font-size:12px; color: rgba(247,246,242,.62); }
 
-    .contentText{
-      font-size: var(--bodySize);
-      line-height:1.72;
-      color: rgba(245,247,255,.92);
+    .bodyText{
+      font-size:15px;
+      line-height:1.75;
+      color: rgba(247,246,242,.92);
       white-space:pre-wrap;
     }
-
     #verseText{
       font-family: var(--serif);
       font-size: var(--verseSize);
       line-height:1.9;
-      color: rgba(245,247,255,.95);
+      color: rgba(247,246,242,.95);
     }
     .verseQuote{ position:relative; padding-left:14px; }
     .verseQuote:before{
-      content:"“"; position:absolute; left:-2px; top:-6px;
-      font-family: var(--serif); font-size:42px;
-      color: rgba(253,186,116,.38); line-height:1;
+      content:"“";
+      position:absolute; left:-2px; top:-6px;
+      font-family: var(--serif);
+      font-size:42px;
+      color: rgba(253,186,116,.38);
+      line-height:1;
     }
-    .verseRefLine{ margin-top:10px; color: rgba(245,247,255,.72); font-size:13px; font-family: var(--font); }
+    .verseRefLine{ margin-top:10px; color: rgba(247,246,242,.72); font-size:13px; font-family: var(--font); }
 
-    .sideTop{
-      padding:18px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    /* Day index (right column) */
+    .indexHead{
+      padding:16px 16px 12px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
     }
-    .sideTop h3{
-      margin:0; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
-      color: rgba(245,247,255,.76); font-weight:800;
+    .indexHead strong{
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(247,246,242,.76);
     }
-    .sideList{ padding:12px; max-height: calc(100vh - 220px); overflow:auto; }
-
-    .dayItem{
-      padding:12px 12px; border-radius:18px;
+    .list{
+      padding:12px;
+      max-height: calc(100vh - 245px);
+      overflow:auto;
+    }
+    .item{
+      padding:12px;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.045);
       margin-bottom:10px;
       cursor:pointer;
-      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
       transition: transform .08s ease, background .15s ease, border .15s ease;
     }
-    .dayItem:hover{ background: rgba(255,255,255,.065); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
-    .dayItem.active{
+    .item:hover{ background: rgba(255,255,255,.065); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
+    .item.active{
       border:1px solid transparent;
       background:
         linear-gradient(180deg, rgba(253,186,116,.12), rgba(255,255,255,.04)) padding-box,
-        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.30), rgba(139,92,246,.30)) border-box;
+        linear-gradient(120deg, rgba(253,186,116,.45), rgba(96,165,250,.25)) border-box;
     }
-    .dayLeft{ min-width:0; display:flex; flex-direction:column; gap:4px; }
-    .dayTitleRow{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
-    .dayTitleRow strong{ font-size:14px; }
-    .refSmall{ font-size:12px; color: rgba(245,247,255,.68); }
-    .topicPill{
-      font-size:11px; padding:6px 10px; border-radius:999px;
+    .item.today{ outline: 2px solid rgba(96,165,250,.18); outline-offset: 2px; }
+
+    .left{ min-width:0; display:flex; flex-direction:column; gap:4px; }
+    .row{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+    .row strong{ font-size:14px; }
+    .refSmall{ font-size:12px; color: rgba(247,246,242,.68); }
+    .topic{
+      font-size:11px;
+      padding:6px 10px;
+      border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.06);
-      color: rgba(245,247,255,.78);
+      color: rgba(247,246,242,.78);
       white-space:nowrap;
-      display:inline-flex; align-items:center; gap:6px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
-    .check{ color: rgba(34,197,94,.95); }
+    .check{ color: rgba(52,211,153,.95); }
     .spark{ color: rgba(96,165,250,.95); }
 
-    /* Drawer (mobile only) */
-    .drawerOverlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.52);
-      backdrop-filter: blur(4px);
-      display:none;
-      z-index:70;
-    }
+    /* Mobile: hide right index; use drawer */
+    .overlay{ position:fixed; inset:0; background: rgba(0,0,0,.55); backdrop-filter: blur(6px); display:none; z-index:50; }
+    .overlay.show{ display:block; }
     .drawer{
       position:fixed; top:0; right:0; height:100%;
-      width: min(420px, 92vw);
+      width: min(520px, 94vw);
       transform: translateX(110%);
       transition: transform .22s ease;
-      z-index:71;
+      z-index:51;
       border-left:1px solid rgba(255,255,255,.12);
       background: rgba(10,14,30,.92);
-      backdrop-filter: blur(14px);
-      box-shadow: -26px 0 80px rgba(0,0,0,.55);
+      backdrop-filter: blur(16px);
+      box-shadow: -26px 0 90px rgba(0,0,0,.62);
       display:flex; flex-direction:column;
     }
-    .drawerOverlay.show{ display:block; }
     .drawer.show{ transform: translateX(0); }
-    .drawerHeader{
-      padding:16px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .drawerHeader strong{
-      letter-spacing:.16em; text-transform:uppercase; font-size:12px;
-      color: rgba(245,247,255,.78);
-    }
-    .drawerBody{ padding:12px; overflow:auto; }
+    .drawerHead{ padding:16px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .drawerHead strong{ font-size:12px; letter-spacing:.18em; text-transform:uppercase; color: rgba(247,246,242,.78); }
+    .drawerBody{ padding:12px 16px 16px 16px; overflow:auto; }
 
-    /* SUPER IMPORTANT: force desktop vs mobile (prevents your screenshot issue) */
-    #openDaysBtn{ display:none !important; }
-    .drawerOverlay, .drawer{ display:none !important; }
-
-    @media (max-width: 1100px){
+    @media (max-width: 980px){
+      .controls{ grid-template-columns: 1fr; }
       .main{ grid-template-columns: 1fr; }
-      #rightPanel{ display:none !important; }
-      #openDaysBtn{ display:inline-flex !important; }
-      .drawerOverlay, .drawer{ display:block !important; }
-      .meta{ align-items:flex-start; min-width:auto; }
-      .metaRow{ justify-content:flex-start; }
-      #searchInput{ width:100%; flex:1 1 100%; }
-      #topicSelect{ width:100%; }
+      #rightIndex{ display:none; }
+      #daysBtn{ display:inline-flex; }
+    }
+    @media (min-width: 981px){
+      #daysBtn{ display:none; }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>One Verse Today</h1>
-          <p>Scripture + Action + Reflection — <strong>one day at a time</strong>.</p>
+  <div class="wrap">
+    <header class="mast">
+      <div class="mastTop">
+        <div class="title">
+          <div class="seal" aria-hidden="true"></div>
+          <div>
+            <h1>One Verse Today</h1>
+            <p>Slow down. Read one verse. Do one small thing. Reflect once.</p>
+          </div>
+        </div>
+
+        <div class="meta">
+          <span class="pill">📅 <span id="dateLabel">—</span></span>
+          <span class="pill">Today <strong id="todayPill">Day —</strong></span>
+          <span class="pill">Selected <strong id="selectedPill">—</strong></span>
+          <span class="pill">Done <strong id="donePill">0</strong></span>
+          <span class="pill">Streak <strong id="streakPill">0</strong></span>
         </div>
       </div>
 
-      <div class="controls">
-        <button id="openDaysBtn" class="btn" type="button">📚 Days</button>
-        <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
-        <select id="topicSelect"></select>
-
-        <button id="prevBtn" class="btn" type="button">◀ Prev</button>
-        <button id="nextBtn" class="btn" type="button">Next ▶</button>
-        <button id="randomBtn" class="btn btnPrimary" type="button">🎲 Random</button>
-
-        <input id="jumpInput" class="input" style="min-width:120px;width:120px;" inputmode="numeric" pattern="[0-9]*" placeholder="Day #" />
-        <button id="jumpBtn" class="btn" type="button">Go</button>
-
-        <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
-        <button id="startBtn" class="btn btnSoft" type="button">✨ Start</button>
-      </div>
-
-      <div class="meta">
-        <div class="metaRow">
-          <span id="dateLabel"></span>
-          <span class="pill"><strong id="dayPill">Day —</strong></span>
-          <span class="pill">Streak <strong id="streakLabel">0</strong></span>
-          <span class="pill">Done <strong id="doneLabel">0</strong></span>
+      <div class="ribbon">
+        <div class="controls">
+          <input id="searchInput" class="input" type="search" placeholder="Search reference, topic, challenge, reflection…" autocomplete="off" />
+          <select id="topicSelect"></select>
+          <button id="prevBtn" class="btn" type="button">◀ Prev</button>
+          <button id="nextBtn" class="btn" type="button">Next ▶</button>
+          <button id="randomBtn" class="btn btnPrimary" type="button">🎲 Random</button>
+          <button id="daysBtn" class="btn" type="button">📚 Days</button>
         </div>
-        <div class="metaRow">
-          <span class="pill">Showing <strong id="countLabel">0</strong></span>
-          <span class="pill">Selected <strong id="selectedLabel">—</strong></span>
+
+        <div class="row2">
+          <div class="row2Left">
+            <input id="jumpInput" class="input" style="width:140px" inputmode="numeric" pattern="[0-9]*" placeholder="Jump to day…" />
+            <button id="jumpBtn" class="btn" type="button">Go</button>
+            <button id="todayBtn" class="btn btnGood" type="button">📅 Today</button>
+            <button id="startBtn" class="btn" type="button">Day 1</button>
+          </div>
+          <div class="row2Right">
+            <span class="pill">Tip: Share uses a <strong>?day=</strong> link.</span>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="main">
       <section class="panel">
-        <div class="panelHeader">
+        <div class="panelHead">
           <div>
             <h2 id="dayTitle">Loading…</h2>
-            <div class="subtitle">
-              <span class="pill">Topic: <strong id="topicLabel">—</strong></span>
-              <span class="pill">Reference: <strong id="refLabel">—</strong></span>
+            <div class="chips">
+              <span class="chip">Topic: <strong id="topicLabel">—</strong></span>
+              <span class="chip">Reference: <strong id="refLabel">—</strong></span>
             </div>
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <div class="actions">
             <button id="completeBtn" class="btn btnGood" type="button">✅ Mark complete</button>
             <button id="copyBtn" class="btn" type="button">📋 Copy</button>
             <button id="shareBtn" class="btn" type="button">🔗 Share</button>
           </div>
         </div>
 
-        <div class="gridCards">
+        <div class="cards">
           <article class="card">
             <div class="cardHead">
               <div class="label">Scripture (KJV)</div>
-              <div class="hint" id="verseStatus">Auto-loaded</div>
+              <div class="hint" id="verseStatus">Auto-load</div>
             </div>
-            <div id="verseText" class="contentText">Select a day to see the verse.</div>
+            <div id="verseText" class="bodyText">Select a day to load the verse.</div>
           </article>
 
           <article class="card">
             <div class="cardHead">
               <div class="label">Today’s Challenge</div>
-              <div class="hint">Suggested time: 10 minutes</div>
+              <div class="hint">10 minutes. Small wins count.</div>
             </div>
-            <div id="challengeText" class="contentText">—</div>
+            <div id="challengeText" class="bodyText">—</div>
           </article>
 
           <article class="card">
@@ -470,45 +523,43 @@
               <div class="label">Reflection</div>
               <div class="hint">Write one honest line.</div>
             </div>
-            <div id="reflectionText" class="contentText">—</div>
+            <div id="reflectionText" class="bodyText">—</div>
             <div style="height:10px"></div>
             <textarea id="notesInput" placeholder="Your note for today (saved on this device)…"></textarea>
             <div class="hint" id="notesStatus" style="margin-top:8px;">Notes saved locally</div>
           </article>
-        </div>
 
-        <div class="hint" style="padding:0 18px 18px 18px;" id="footerTip"></div>
+          <div class="hint" id="footerTip" style="padding: 0 2px 2px 2px;"></div>
+        </div>
       </section>
 
-      <aside class="panel" id="rightPanel">
-        <div class="sideTop">
-          <h3>Days</h3>
-          <div class="pill">Click to open</div>
+      <aside class="panel" id="rightIndex">
+        <div class="indexHead">
+          <strong>Day Index</strong>
+          <span class="pill" style="padding:7px 10px">Click a day</span>
         </div>
-        <div class="sideList" id="daysList"></div>
+        <div class="list" id="daysList"></div>
       </aside>
     </main>
   </div>
 
   <!-- Mobile drawer -->
-  <div class="drawerOverlay" id="drawerOverlay"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawerHeader">
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawerHead">
       <strong>Days</strong>
       <button class="btn" id="closeDrawerBtn" type="button">✕</button>
     </div>
-    <div class="drawerBody" id="drawerDays"></div>
-  </div>
+    <div class="drawerBody" id="drawerBody"></div>
+  </aside>
 
   <script>
   (() => {
     'use strict';
 
     const PLAN_URL = 'plan.json';
-
-    // bump keys to reset old weird starts
-    const KEY_LAST = 'ovt_lastDay_v5';
-    const KEY_PROGRESS = 'ovt_progress_v5';
+    const KEY_LAST = 'ovt_lastDay_warm_v1';
+    const KEY_PROGRESS = 'ovt_progress_warm_v1';
 
     const VERSE_API_BASE = 'https://bible-api.com/';
     const VERSE_TRANSLATION = 'kjv';
@@ -516,30 +567,24 @@
     const VERSE_CACHE_PREFIX = 'ovt_kjv_';
 
     const $ = (id) => document.getElementById(id);
-
     const el = {
-      openDaysBtn: $('openDaysBtn'),
-      drawerOverlay: $('drawerOverlay'),
-      drawer: $('drawer'),
-      closeDrawerBtn: $('closeDrawerBtn'),
-      drawerDays: $('drawerDays'),
+      dateLabel: $('dateLabel'),
+      todayPill: $('todayPill'),
+      selectedPill: $('selectedPill'),
+      donePill: $('donePill'),
+      streakPill: $('streakPill'),
 
       searchInput: $('searchInput'),
       topicSelect: $('topicSelect'),
       prevBtn: $('prevBtn'),
       nextBtn: $('nextBtn'),
       randomBtn: $('randomBtn'),
+      daysBtn: $('daysBtn'),
+
       jumpInput: $('jumpInput'),
       jumpBtn: $('jumpBtn'),
       todayBtn: $('todayBtn'),
       startBtn: $('startBtn'),
-
-      dateLabel: $('dateLabel'),
-      dayPill: $('dayPill'),
-      countLabel: $('countLabel'),
-      selectedLabel: $('selectedLabel'),
-      streakLabel: $('streakLabel'),
-      doneLabel: $('doneLabel'),
 
       dayTitle: $('dayTitle'),
       topicLabel: $('topicLabel'),
@@ -553,11 +598,17 @@
       verseStatus: $('verseStatus'),
       challengeText: $('challengeText'),
       reflectionText: $('reflectionText'),
+
       notesInput: $('notesInput'),
       notesStatus: $('notesStatus'),
       footerTip: $('footerTip'),
 
-      daysList: $('daysList')
+      daysList: $('daysList'),
+
+      overlay: $('overlay'),
+      drawer: $('drawer'),
+      closeDrawerBtn: $('closeDrawerBtn'),
+      drawerBody: $('drawerBody'),
     };
 
     let plan = [];
@@ -565,213 +616,169 @@
     let selectedDay = null;
     let selectedIndex = -1;
     let lastVerseRef = null;
-
     let progress = { doneDays: {}, notes: {} };
 
-    const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
-    const safe = (v) => (v == null ? '' : String(v)).trim();
-    const norm = (s) => safe(s).toLowerCase();
+    const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+    const safe = (v)=> (v==null?'':String(v)).trim();
+    const norm = (s)=> safe(s).toLowerCase();
 
     function yyyyMMdd(d=new Date()){
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
+      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     }
     function formatDate(d){
-      return d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      return d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     }
-
-    function isLeapYear(y){
-      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
-    }
+    function isLeapYear(y){ return (y%4===0 && y%100!==0) || (y%400===0); }
     function dayOfYear(d){
-      const start = new Date(d.getFullYear(), 0, 1);
-      const oneDay = 24 * 60 * 60 * 1000;
-      return Math.floor((d - start) / oneDay) + 1;
+      const start=new Date(d.getFullYear(),0,1);
+      const oneDay=24*60*60*1000;
+      return Math.floor((d-start)/oneDay)+1;
     }
     function todayPlanDay(){
-      const now = new Date();
-      const doy = dayOfYear(now);
-      if (isLeapYear(now.getFullYear()) && doy === 366) return 365;
-      return clamp(doy, 1, 365);
+      const now=new Date();
+      const doy=dayOfYear(now);
+      if (isLeapYear(now.getFullYear()) && doy===366) return 365;
+      return clamp(doy,1,365);
     }
 
     function getURLDay(){
-      const url = new URL(location.href);
-      const qs = url.searchParams.get('day');
-      if (!qs) return null;
-      const n = parseInt(qs, 10);
-      return Number.isFinite(n) ? clamp(n, 1, 365) : null;
+      const url=new URL(location.href);
+      const qs=url.searchParams.get('day');
+      if(!qs) return null;
+      const n=parseInt(qs,10);
+      return Number.isFinite(n)?clamp(n,1,365):null;
     }
     function setURLDay(day){
-      const url = new URL(location.href);
-      url.searchParams.set('day', String(day));
-      history.replaceState(null, '', url.toString());
+      const url=new URL(location.href);
+      url.searchParams.set('day',String(day));
+      history.replaceState(null,'',url.toString());
     }
-
-    function saveLastDay(day){
-      try { localStorage.setItem(KEY_LAST, String(day)); } catch {}
-    }
-    function loadLastDay(){
-      try {
-        const n = parseInt(localStorage.getItem(KEY_LAST), 10);
-        return Number.isFinite(n) ? clamp(n,1,365) : null;
-      } catch { return null; }
-    }
+    function saveLastDay(day){ try{ localStorage.setItem(KEY_LAST,String(day)); }catch{} }
+    function loadLastDay(){ try{ const n=parseInt(localStorage.getItem(KEY_LAST),10); return Number.isFinite(n)?clamp(n,1,365):null; }catch{ return null; } }
 
     function loadProgress(){
       try{
-        const raw = localStorage.getItem(KEY_PROGRESS);
-        if (!raw) return;
-        const obj = JSON.parse(raw);
-        if (obj && typeof obj === 'object'){
-          progress.doneDays = obj.doneDays || {};
-          progress.notes = obj.notes || {};
+        const raw=localStorage.getItem(KEY_PROGRESS);
+        if(!raw) return;
+        const obj=JSON.parse(raw);
+        if(obj && typeof obj==='object'){
+          progress.doneDays=obj.doneDays||{};
+          progress.notes=obj.notes||{};
         }
-      } catch {}
+      }catch{}
     }
-    function saveProgress(){
-      try { localStorage.setItem(KEY_PROGRESS, JSON.stringify(progress)); } catch {}
-    }
+    function saveProgress(){ try{ localStorage.setItem(KEY_PROGRESS,JSON.stringify(progress)); }catch{} }
 
-    function setVerseStatus(msg, type='info'){
-      el.verseStatus.textContent = msg;
-      el.verseStatus.style.color =
-        type === 'good' ? 'rgba(34,197,94,.92)'
-      : type === 'warn' ? 'rgba(253,186,116,.92)'
-      : type === 'bad'  ? 'rgba(251,113,133,.96)'
-      : 'rgba(245,247,255,.62)';
-    }
-
+    function doneCount(){ return Object.keys(progress.doneDays||{}).length; }
     function computeStreak(){
-      const doneDates = new Set(Object.values(progress.doneDays || {}));
-      let streak = 0;
-      let cursor = new Date();
-      while (doneDates.has(yyyyMMdd(cursor))) {
-        streak++;
-        cursor.setDate(cursor.getDate() - 1);
-      }
+      const doneDates=new Set(Object.values(progress.doneDays||{}));
+      let streak=0; let cursor=new Date();
+      while(doneDates.has(yyyyMMdd(cursor))){ streak++; cursor.setDate(cursor.getDate()-1); }
       return streak;
     }
-    function updateProgressBadges(){
-      el.doneLabel.textContent = String(Object.keys(progress.doneDays || {}).length);
-      el.streakLabel.textContent = String(computeStreak());
-    }
-    function isDayDone(day){
-      return Boolean(progress.doneDays && progress.doneDays[String(day)]);
+    function isDayDone(day){ return Boolean(progress.doneDays && progress.doneDays[String(day)]); }
+    function updateBadges(){
+      el.dateLabel.textContent=formatDate(new Date());
+      el.todayPill.textContent=`Day ${todayPlanDay()}`;
+      el.selectedPill.textContent=selectedDay?`Day ${selectedDay}`:'—';
+      el.donePill.textContent=String(doneCount());
+      el.streakPill.textContent=String(computeStreak());
     }
 
-    function cacheGet(ref){
-      try { return localStorage.getItem(VERSE_CACHE_PREFIX + ref); } catch { return null; }
-    }
-    function cacheSet(ref, text){
-      try { localStorage.setItem(VERSE_CACHE_PREFIX + ref, text); } catch {}
-    }
-    async function fetchWithTimeout(url){
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), VERSE_TIMEOUT_MS);
-      try { return await fetch(url, { signal: controller.signal }); }
-      finally { clearTimeout(t); }
-    }
-    async function loadVerseKJV(reference){
-      const ref = safe(reference);
-      if (!ref) return null;
-
-      const cached = cacheGet(ref);
-      if (cached) return cached;
-
-      const url = `${VERSE_API_BASE}${encodeURIComponent(ref)}?translation=${encodeURIComponent(VERSE_TRANSLATION)}`;
-      const res = await fetchWithTimeout(url);
-      if (!res.ok) throw new Error(`Verse API HTTP ${res.status}`);
-
-      const data = await res.json();
-      const text = safe(data && data.text);
-      if (!text) throw new Error('Verse API returned empty text');
-
-      cacheSet(ref, text);
-      return text;
+    function setVerseStatus(msg,type='info'){
+      el.verseStatus.textContent=msg;
+      el.verseStatus.style.color=
+        type==='good'?'rgba(52,211,153,.92)':
+        type==='warn'?'rgba(253,186,116,.92)':
+        type==='bad'?'rgba(251,113,133,.96)':
+        'rgba(247,246,242,.62)';
     }
 
     function escapeHTML(s){
-      return String(s)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#39;");
+      return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
     }
     function formatVerseBlock(verseText, ref){
-      const clean = safe(verseText).replace(/\s+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+      const clean=safe(verseText).replace(/\s+\n/g,'\n').replace(/\n{3,}/g,'\n\n');
       return `<div class="verseQuote">${escapeHTML(clean)}</div><div class="verseRefLine">— ${escapeHTML(ref)} (KJV)</div>`;
     }
 
+    function cacheGet(ref){ try{ return localStorage.getItem(VERSE_CACHE_PREFIX+ref); }catch{ return null; } }
+    function cacheSet(ref,text){ try{ localStorage.setItem(VERSE_CACHE_PREFIX+ref,text); }catch{} }
+
+    async function fetchWithTimeout(url){
+      const controller=new AbortController();
+      const t=setTimeout(()=>controller.abort(),VERSE_TIMEOUT_MS);
+      try{ return await fetch(url,{signal:controller.signal}); }
+      finally{ clearTimeout(t); }
+    }
+    async function loadVerseKJV(reference){
+      const ref=safe(reference);
+      if(!ref) return null;
+      const cached=cacheGet(ref);
+      if(cached) return cached;
+      const url=`${VERSE_API_BASE}${encodeURIComponent(ref)}?translation=${encodeURIComponent(VERSE_TRANSLATION)}`;
+      const res=await fetchWithTimeout(url);
+      if(!res.ok) throw new Error(`Verse API HTTP ${res.status}`);
+      const data=await res.json();
+      const text=safe(data && data.text);
+      if(!text) throw new Error('Verse API returned empty text');
+      cacheSet(ref,text);
+      return text;
+    }
+
     function uniqueTopics(items){
-      const set = new Set();
-      for (const it of items) set.add(safe(it.topic) || 'General');
+      const set=new Set();
+      for(const it of items) set.add(safe(it.topic)||'General');
       return Array.from(set).sort((a,b)=>a.localeCompare(b));
     }
 
-    function applyFilters(){
-      const q = norm(el.searchInput.value);
-      const topic = el.topicSelect.value;
-
-      filtered = plan.filter(item => {
-        const t = safe(item.topic) || 'General';
-        if (topic && topic !== 'ALL' && t !== topic) return false;
-        if (!q) return true;
-        const hay = norm(`${item.day} ${item.reference} ${item.topic} ${item.challenge} ${item.reflection}`);
-        return hay.includes(q);
-      });
-
-      el.countLabel.textContent = `${filtered.length}/${plan.length}`;
-      renderDaysLists();
-
-      if (selectedDay != null){
-        const idx = filtered.findIndex(x => x.day === selectedDay);
-        if (idx >= 0){ selectedIndex = idx; highlightDays(); return; }
-      }
-      if (filtered.length) selectDay(filtered[0].day);
+    function openDrawer(){
+      el.overlay.classList.add('show');
+      el.drawer.classList.add('show');
+      el.drawer.setAttribute('aria-hidden','false');
+      setTimeout(()=>scrollToDay(selectedDay ?? todayPlanDay()), 0);
+    }
+    function closeDrawer(){
+      el.overlay.classList.remove('show');
+      el.drawer.classList.remove('show');
+      el.drawer.setAttribute('aria-hidden','true');
     }
 
-    function createDayItem(item){
-      const div = document.createElement('div');
-      div.className = 'dayItem';
-      div.dataset.day = String(item.day);
+    function createItem(item){
+      const div=document.createElement('div');
+      div.className='item';
+      div.dataset.day=String(item.day);
 
-      const left = document.createElement('div');
-      left.className = 'dayLeft';
+      const today=todayPlanDay();
+      if(item.day===today) div.classList.add('today');
 
-      const row = document.createElement('div');
-      row.className = 'dayTitleRow';
+      const left=document.createElement('div');
+      left.className='left';
 
-      const strong = document.createElement('strong');
-      strong.textContent = `Day ${item.day}`;
+      const row=document.createElement('div');
+      row.className='row';
 
-      const ref = document.createElement('span');
-      ref.className = 'refSmall';
-      ref.textContent = safe(item.reference);
+      const strong=document.createElement('strong');
+      strong.textContent=`Day ${item.day}`;
 
-      row.appendChild(strong);
-      row.appendChild(ref);
+      const ref=document.createElement('span');
+      ref.className='refSmall';
+      ref.textContent=safe(item.reference);
+
+      row.appendChild(strong); row.appendChild(ref);
       left.appendChild(row);
 
-      const right = document.createElement('span');
-      right.className = 'topicPill';
-
-      const today = todayPlanDay();
-      const isToday = item.day === today;
-      const done = isDayDone(item.day);
-
+      const right=document.createElement('span');
+      right.className='topic';
       right.innerHTML =
-        `${isToday ? '<span class="spark">✦</span>' : ''}` +
-        `${done ? '<span class="check">✓</span>' : ''}` +
-        `${escapeHTML(safe(item.topic) || 'General')}`;
+        `${(item.day===today)?'<span class="spark">✦</span>':''}`+
+        `${isDayDone(item.day)?'<span class="check">✓</span>':''}`+
+        `${escapeHTML(safe(item.topic)||'General')}`;
 
-      div.appendChild(left);
-      div.appendChild(right);
+      div.appendChild(left); div.appendChild(right);
 
-      div.addEventListener('click', () => {
+      div.addEventListener('click',()=>{
         selectDay(item.day);
         closeDrawer();
       });
@@ -779,271 +786,278 @@
       return div;
     }
 
-    function renderDaysLists(){
-      el.daysList.innerHTML = '';
-      el.drawerDays.innerHTML = '';
-
-      const fragA = document.createDocumentFragment();
-      const fragB = document.createDocumentFragment();
-
-      for (const item of filtered){
-        fragA.appendChild(createDayItem(item));
-        fragB.appendChild(createDayItem(item));
+    function renderLists(){
+      el.daysList.innerHTML='';
+      el.drawerBody.innerHTML='';
+      const fragA=document.createDocumentFragment();
+      const fragB=document.createDocumentFragment();
+      for(const item of filtered){
+        fragA.appendChild(createItem(item));
+        fragB.appendChild(createItem(item));
       }
-
       el.daysList.appendChild(fragA);
-      el.drawerDays.appendChild(fragB);
-
-      highlightDays();
-      updateProgressBadges();
+      el.drawerBody.appendChild(fragB);
+      highlightActive();
     }
 
-    function highlightDays(){
-      const markActive = (root) => {
-        const nodes = root.querySelectorAll('.dayItem');
-        nodes.forEach(n=>{
-          const d = parseInt(n.dataset.day,10);
-          n.classList.toggle('active', d === selectedDay);
+    function highlightActive(){
+      const mark=(root)=>{
+        root.querySelectorAll('.item').forEach(n=>{
+          const d=parseInt(n.dataset.day,10);
+          n.classList.toggle('active', d===selectedDay);
         });
       };
-      markActive(el.daysList);
-      markActive(el.drawerDays);
-      el.selectedLabel.textContent = selectedDay ? `Day ${selectedDay}` : '—';
+      mark(el.daysList);
+      mark(el.drawerBody);
+    }
+
+    function scrollToDay(day){
+      const node = el.drawerBody.querySelector(`.item[data-day="${day}"]`);
+      if(node) node.scrollIntoView({block:'center'});
+    }
+
+    function applyFilters(){
+      const q=norm(el.searchInput.value);
+      const topic=el.topicSelect.value;
+
+      filtered = plan.filter(item=>{
+        const t=safe(item.topic)||'General';
+        if(topic && topic!=='ALL' && t!==topic) return false;
+        if(!q) return true;
+        const hay=norm(`${item.day} ${item.reference} ${item.topic} ${item.challenge} ${item.reflection}`);
+        return hay.includes(q);
+      });
+
+      renderLists();
+      if(selectedDay!=null){
+        const idx=filtered.findIndex(x=>x.day===selectedDay);
+        if(idx>=0){ selectedIndex=idx; return; }
+      }
+      if(filtered.length) selectDay(filtered[0].day);
+    }
+
+    function prev(){
+      if(!filtered.length) return;
+      if(selectedIndex<0) selectedIndex=0;
+      selectedIndex=clamp(selectedIndex-1,0,filtered.length-1);
+      selectDay(filtered[selectedIndex].day);
+    }
+    function next(){
+      if(!filtered.length) return;
+      if(selectedIndex<0) selectedIndex=0;
+      selectedIndex=clamp(selectedIndex+1,0,filtered.length-1);
+      selectDay(filtered[selectedIndex].day);
+    }
+    function random(){
+      if(!filtered.length) return;
+      const idx=Math.floor(Math.random()*filtered.length);
+      selectDay(filtered[idx].day);
+    }
+    function jump(){
+      const v=parseInt(el.jumpInput.value,10);
+      if(!Number.isFinite(v)) return;
+      selectDay(clamp(v,1,365));
+      el.jumpInput.value='';
+    }
+
+    function setCompleteButton(){
+      const done = selectedDay!=null && isDayDone(selectedDay);
+      el.completeBtn.textContent = done ? '✅ Completed' : '✅ Mark complete';
+      el.completeBtn.style.opacity = done ? '0.90' : '1';
+    }
+
+    function markComplete(){
+      if(selectedDay==null) return;
+      const k=String(selectedDay);
+      const todayKey=yyyyMMdd();
+      if(progress.doneDays[k]) delete progress.doneDays[k];
+      else progress.doneDays[k]=todayKey;
+      saveProgress();
+      updateBadges();
+      setCompleteButton();
+      renderLists();
+    }
+
+    let notesTimer=null;
+    function saveNotesDebounced(){
+      if(selectedDay==null) return;
+      clearTimeout(notesTimer);
+      notesTimer=setTimeout(()=>{
+        progress.notes[String(selectedDay)] = el.notesInput.value || '';
+        saveProgress();
+        el.notesStatus.textContent='Saved';
+        setTimeout(()=>{ el.notesStatus.textContent='Notes saved locally'; }, 900);
+      }, 250);
+    }
+
+    function getInitialDay(){
+      const urlDay=getURLDay();
+      if(urlDay) return urlDay;
+
+      const last=loadLastDay();
+      if(last) return last;
+
+      return todayPlanDay(); // first-time starts on today
     }
 
     async function renderSelected(){
-      if (selectedDay == null) return;
-      const item = plan.find(x=>x.day===selectedDay);
-      if (!item) return;
+      if(selectedDay==null) return;
+      const item=plan.find(x=>x.day===selectedDay);
+      if(!item) return;
 
-      el.dayTitle.textContent = `Day ${item.day}`;
-      el.topicLabel.textContent = safe(item.topic) || 'General';
-      el.refLabel.textContent = safe(item.reference) || '—';
-      el.challengeText.textContent = safe(item.challenge) || '—';
-      el.reflectionText.textContent = safe(item.reflection) || '—';
-      el.dayPill.textContent = `Day ${item.day}`;
+      el.dayTitle.textContent=`Day ${item.day}`;
+      el.topicLabel.textContent=safe(item.topic)||'General';
+      el.refLabel.textContent=safe(item.reference)||'—';
+      el.challengeText.textContent=safe(item.challenge)||'—';
+      el.reflectionText.textContent=safe(item.reflection)||'—';
 
       el.notesInput.value = progress.notes[String(selectedDay)] || '';
-      el.notesStatus.textContent = 'Notes saved locally';
+      el.notesStatus.textContent='Notes saved locally';
 
-      const today = todayPlanDay();
-      const doneDates = new Set(Object.values(progress.doneDays || {}));
-      const hasCompletedToday = doneDates.has(yyyyMMdd());
-
+      const today=todayPlanDay();
       el.footerTip.textContent =
-        (selectedDay === today)
-          ? (hasCompletedToday ? 'You already completed today — beautiful work. ✨' : 'Today is a great day to do the challenge. 🌤️')
-          : 'Tip: “Today” jumps to the day-of-year. “Start” begins at Day 1.';
+        (selectedDay===today)
+        ? 'Today is a good day. Read slowly. Do one small thing. ✨'
+        : 'Tip: use Today to jump to the day-of-year.';
 
-      // verse
-      const ref = safe(item.reference);
-      if (!ref){
-        el.verseText.textContent = 'No reference found for this day.';
-        setVerseStatus('Missing reference', 'warn');
+      setCompleteButton();
+      updateBadges();
+      highlightActive();
+
+      const ref=safe(item.reference);
+      if(!ref){
+        el.verseText.textContent='No reference found for this day.';
+        setVerseStatus('Missing reference','warn');
         return;
       }
-      if (ref === lastVerseRef) return;
-      lastVerseRef = ref;
+      if(ref===lastVerseRef) return;
+      lastVerseRef=ref;
 
-      el.verseText.textContent = 'Loading verse…';
-      setVerseStatus('Loading…', 'info');
+      el.verseText.textContent='Loading verse…';
+      setVerseStatus('Loading…','info');
 
       try{
-        const verse = await loadVerseKJV(ref);
-        el.verseText.innerHTML = formatVerseBlock(verse, ref);
-        setVerseStatus('Loaded', 'good');
-      } catch (err){
-        const msg = err && err.message ? err.message : String(err || 'Unknown error');
+        const verse=await loadVerseKJV(ref);
+        el.verseText.innerHTML=formatVerseBlock(verse,ref);
+        setVerseStatus('Loaded','good');
+      }catch(err){
+        const msg=err && err.message ? err.message : String(err||'Unknown error');
         el.verseText.textContent =
-          `Verse text couldn’t load for “${ref}”.\n\n` +
-          `Reference still works—look it up in your preferred Bible.\n\n` +
-          `Debug: ${msg}\n\n` +
-          `If you have a strict Content-Security-Policy, allow:\nconnect-src 'self' https://bible-api.com`;
-        setVerseStatus('Could not load', 'bad');
+          `Verse text couldn’t load for “${ref}”.\n\n`+
+          `Reference still works—look it up in your preferred Bible.\n\n`+
+          `Debug: ${msg}`;
+        setVerseStatus('Could not load','bad');
       }
     }
 
     function selectDay(day){
-      const d = clamp(parseInt(day,10), 1, 365);
-      selectedDay = d;
-      selectedIndex = filtered.findIndex(x=>x.day===selectedDay);
+      const d=clamp(parseInt(day,10),1,365);
+      selectedDay=d;
+      selectedIndex=filtered.findIndex(x=>x.day===selectedDay);
 
       saveLastDay(selectedDay);
       setURLDay(selectedDay);
 
-      highlightDays();
+      updateBadges();
       renderSelected();
-    }
-
-    function prev(){
-      if (!filtered.length) return;
-      if (selectedIndex < 0) selectedIndex = 0;
-      selectedIndex = clamp(selectedIndex - 1, 0, filtered.length - 1);
-      selectDay(filtered[selectedIndex].day);
-    }
-    function next(){
-      if (!filtered.length) return;
-      if (selectedIndex < 0) selectedIndex = 0;
-      selectedIndex = clamp(selectedIndex + 1, 0, filtered.length - 1);
-      selectDay(filtered[selectedIndex].day);
-    }
-    function random(){
-      if (!filtered.length) return;
-      const idx = Math.floor(Math.random()*filtered.length);
-      selectDay(filtered[idx].day);
-    }
-    function jump(){
-      const v = parseInt(el.jumpInput.value, 10);
-      if (!Number.isFinite(v)) return;
-      selectDay(clamp(v,1,365));
-      el.jumpInput.value = '';
-    }
-
-    function markComplete(){
-      if (selectedDay == null) return;
-      const dayKey = String(selectedDay);
-      const todayKey = yyyyMMdd();
-
-      if (progress.doneDays[dayKey]) delete progress.doneDays[dayKey];
-      else progress.doneDays[dayKey] = todayKey;
-
-      saveProgress();
-      renderDaysLists();
-      renderSelected();
-    }
-
-    let notesTimer = null;
-    function saveNotesDebounced(){
-      if (selectedDay == null) return;
-      clearTimeout(notesTimer);
-      notesTimer = setTimeout(() => {
-        progress.notes[String(selectedDay)] = el.notesInput.value || '';
-        saveProgress();
-        el.notesStatus.textContent = 'Saved';
-        setTimeout(()=>{ el.notesStatus.textContent = 'Notes saved locally'; }, 900);
-      }, 250);
-    }
-
-    // Drawer controls
-    function openDrawer(){
-      el.drawerOverlay.classList.add('show');
-      el.drawer.classList.add('show');
-    }
-    function closeDrawer(){
-      el.drawerOverlay.classList.remove('show');
-      el.drawer.classList.remove('show');
-    }
-
-    // Start rules
-    function pickInitialDay(){
-      const urlDay = getURLDay();
-      if (urlDay) return urlDay;
-
-      const last = loadLastDay();
-      const today = todayPlanDay();
-      const doneDates = new Set(Object.values(progress.doneDays || {}));
-      const hasCompletedToday = doneDates.has(yyyyMMdd());
-
-      if (last) return hasCompletedToday ? last : today;
-      return 1;
     }
 
     async function loadPlan(){
-      const res = await fetch(PLAN_URL, { cache:'no-store' });
-      if (!res.ok) throw new Error(`Failed to load plan.json (HTTP ${res.status})`);
-      const data = await res.json();
+      const res=await fetch(PLAN_URL,{cache:'no-store'});
+      if(!res.ok) throw new Error(`Failed to load plan.json (HTTP ${res.status})`);
+      const data=await res.json();
 
-      plan = Array.isArray(data) ? data : [];
+      plan = Array.isArray(data)?data:[];
       plan = plan
-        .filter(x => x && Number.isFinite(parseInt(x.day,10)))
-        .map(x => ({
-          day: clamp(parseInt(x.day,10), 1, 365),
+        .filter(x=>x && Number.isFinite(parseInt(x.day,10)))
+        .map(x=>({
+          day: clamp(parseInt(x.day,10),1,365),
           reference: safe(x.reference),
-          topic: safe(x.topic) || 'General',
+          topic: safe(x.topic)||'General',
           challenge: safe(x.challenge),
           reflection: safe(x.reflection)
         }))
         .sort((a,b)=>a.day-b.day);
 
-      // topics
-      const topics = uniqueTopics(plan);
-      el.topicSelect.innerHTML = '';
-      const optAll = document.createElement('option');
-      optAll.value = 'ALL';
-      optAll.textContent = 'All topics';
+      const topics=uniqueTopics(plan);
+      el.topicSelect.innerHTML='';
+      const optAll=document.createElement('option');
+      optAll.value='ALL'; optAll.textContent='All topics';
       el.topicSelect.appendChild(optAll);
-      for (const t of topics){
-        const opt = document.createElement('option');
-        opt.value = t;
-        opt.textContent = t;
+      for(const t of topics){
+        const opt=document.createElement('option');
+        opt.value=t; opt.textContent=t;
         el.topicSelect.appendChild(opt);
       }
 
-      el.dateLabel.textContent = formatDate(new Date());
-
       filtered = plan.slice();
-      el.countLabel.textContent = `${filtered.length}/${plan.length}`;
+      renderLists();
 
-      renderDaysLists();
-      selectDay(pickInitialDay());
+      selectDay(getInitialDay());
+      updateBadges();
+
+      // auto-scroll the desktop list to today on first load
+      setTimeout(()=>{
+        const today=todayPlanDay();
+        const node = el.daysList.querySelector(`.item[data-day="${today}"]`);
+        if(node) node.scrollIntoView({block:'center'});
+      }, 0);
     }
 
-    // Wire events
+    // Events
     el.searchInput.addEventListener('input', applyFilters);
     el.topicSelect.addEventListener('change', applyFilters);
 
     el.prevBtn.addEventListener('click', prev);
     el.nextBtn.addEventListener('click', next);
     el.randomBtn.addEventListener('click', random);
-    el.jumpBtn.addEventListener('click', jump);
-    el.jumpInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') jump(); });
 
-    el.todayBtn.addEventListener('click', () => selectDay(todayPlanDay()));
-    el.startBtn.addEventListener('click', () => selectDay(1));
+    el.jumpBtn.addEventListener('click', jump);
+    el.jumpInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') jump(); });
+
+    el.todayBtn.addEventListener('click', ()=> selectDay(todayPlanDay()));
+    el.startBtn.addEventListener('click', ()=> selectDay(1));
+
+    el.daysBtn.addEventListener('click', openDrawer);
+    el.overlay.addEventListener('click', closeDrawer);
+    el.closeDrawerBtn.addEventListener('click', closeDrawer);
 
     el.completeBtn.addEventListener('click', markComplete);
     el.notesInput.addEventListener('input', saveNotesDebounced);
 
     el.copyBtn.addEventListener('click', async ()=>{
-      if (selectedDay == null) return;
-      const item = plan.find(x=>x.day===selectedDay);
-      if (!item) return;
-
+      if(selectedDay==null) return;
+      const item=plan.find(x=>x.day===selectedDay);
+      if(!item) return;
       const note = progress.notes[String(selectedDay)] || '';
       const plainVerse = safe(el.verseText.textContent);
-
       const text =
-        `Day ${item.day}\n` +
-        `Topic: ${item.topic}\n` +
-        `Reference: ${item.reference}\n\n` +
-        `${plainVerse}\n\n` +
-        `Challenge: ${item.challenge}\n\n` +
-        `Reflection: ${item.reflection}\n\n` +
+        `Day ${item.day}\n`+
+        `Topic: ${item.topic}\n`+
+        `Reference: ${item.reference}\n\n`+
+        `${plainVerse}\n\n`+
+        `Challenge: ${item.challenge}\n\n`+
+        `Reflection: ${item.reflection}\n\n`+
         (note ? `My note: ${note}\n` : '');
-
-      try{ await navigator.clipboard.writeText(text); } catch {}
+      try{ await navigator.clipboard.writeText(text); }catch{}
     });
 
     el.shareBtn.addEventListener('click', async ()=>{
-      if (selectedDay == null) return;
-      const url = new URL(location.href);
-      url.searchParams.set('day', String(selectedDay));
-      try{ await navigator.clipboard.writeText(url.toString()); } catch {}
+      if(selectedDay==null) return;
+      const url=new URL(location.href);
+      url.searchParams.set('day',String(selectedDay));
+      try{ await navigator.clipboard.writeText(url.toString()); }catch{}
     });
-
-    el.openDaysBtn.addEventListener('click', openDrawer);
-    el.closeDrawerBtn.addEventListener('click', closeDrawer);
-    el.drawerOverlay.addEventListener('click', closeDrawer);
 
     // Init
     loadProgress();
-    updateProgressBadges();
+    updateBadges();
     loadPlan().catch(err=>{
       console.error(err);
-      el.dayTitle.textContent = 'Error loading plan';
-      el.verseText.textContent = String(err && err.message ? err.message : err);
-      setVerseStatus('Load failed', 'bad');
-      el.footerTip.textContent = 'Make sure plan.json is in the same folder and valid JSON.';
+      el.dayTitle.textContent='Error loading plan';
+      el.verseText.textContent=String(err && err.message ? err.message : err);
+      setVerseStatus('Load failed','bad');
+      el.footerTip.textContent='Make sure plan.json is in the same folder and valid JSON.';
     });
 
   })();
